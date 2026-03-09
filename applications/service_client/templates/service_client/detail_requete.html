@@ -1,0 +1,155 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Requête #{{ requete.id }} - Service Client{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="text-center mb-5 fade-in">
+            <h1 class="display-5 fw-bold text-primary d-flex align-items-center justify-content-center gap-3">
+                <i class="bi bi-ticket-detailed"></i>
+                Requête #{{ requete.id }}
+            </h1>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card card-custom fade-in">
+                    <div class="card-body p-4">
+                        <h2 class="h4 fw-bold text-dark mb-3">{{ requete.titre }}</h2>
+                        <div class="bg-light p-3 rounded border-start border-primary border-4 mb-4">
+                            <div class="text-muted" style="white-space: pre-wrap;">{{ requete.description }}</div>
+                        </div>
+                        
+                        <div class="d-flex gap-3 justify-content-center pt-4 border-top">
+                            <!-- <a href="{% url 'ajouter_reponse' requete.pk %}" class="btn btn-success btn-custom">
+                                <i class="bi bi-plus-circle me-2"></i>Ajouter une réponse
+                            </a> -->
+
+                              <a href="#" class="btn btn-success btn-custom">
+                                <i class="bi bi-plus-circle me-2"></i>Ajouter une réponse
+                            </a> 
+                            <a href="{% url 'liste_requetes' %}" class="btn btn-secondary btn-custom">
+                                <i class="bi bi-arrow-left me-2"></i>Retour à la liste
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="card card-custom fade-in">
+                    <div class="card-body p-4">
+                        <h5 class="h6 fw-bold text-dark d-flex align-items-center gap-2 mb-4">
+                            <i class="bi bi-info-circle text-primary"></i>
+                            Informations
+                        </h5>
+                        
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <span class="fw-semibold text-dark">Statut :</span>
+                            <span>
+                                {% if requete.statut == 'non_traite' %}
+                                    <span class="badge bg-danger badge-custom">{{ requete.get_statut_display }}</span>
+                                {% elif requete.statut == 'en_cours' %}
+                                    <span class="badge bg-warning badge-custom">{{ requete.get_statut_display }}</span>
+                                {% elif requete.statut == 'traite' %}
+                                    <span class="badge bg-success badge-custom">{{ requete.get_statut_display }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <span class="fw-semibold text-dark">Priorité :</span>
+                            <span>
+                                {% if requete.priorite == 'urgente' %}
+                                    <span class="badge priority-urgent badge-custom">Urgent</span>
+                                {% elif requete.priorite == 'haute' %}
+                                    <span class="badge priority-haute badge-custom">Haute</span>
+                                {% elif requete.priorite == 'normale' %}
+                                    <span class="badge priority-normale badge-custom">Normale</span>
+                                {% else %}
+                                    <span class="badge priority-faible badge-custom">Faible</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <span class="fw-semibold text-dark">Créé le :</span>
+                            <span class="text-muted small">{{ requete.date_creation|date:"d/m/Y à H:i" }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <span class="fw-semibold text-dark">Dernière modification :</span>
+                            <span class="text-muted small">{{ requete.date_modification|date:"d/m/Y à H:i" }}</span>
+                        </div>
+                        
+                        {% if requete.date_fermeture %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="fw-semibold text-dark">Fermé le :</span>
+                                <span class="text-muted small">{{ requete.date_fermeture|date:"d/m/Y à H:i" }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if requete.assigne_a %}
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="fw-semibold text-dark">Assigné à :</span>
+                                <span class="text-muted small">{{ requete.assigne_a.username }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Réponses -->
+        {% if reponses %}
+            <div class="card card-custom mt-4 fade-in">
+                <div class="card-body p-4">
+                    <h4 class="h5 fw-bold text-dark d-flex align-items-center gap-2 mb-4">
+                        <i class="bi bi-chat-dots text-primary"></i>
+                        Réponses ({{ reponses|length }})
+                    </h4>
+                    
+                    {% for reponse in reponses %}
+                        <div class="card {% if reponse.est_interne %}border-warning bg-warning bg-opacity-10{% else %}border-primary bg-light{% endif %} mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if reponse.est_interne %}
+                                            <i class="bi bi-shield-lock text-warning"></i>
+                                            <span class="fw-semibold text-warning">Note interne - {{ reponse.auteur.username }}</span>
+                                        {% else %}
+                                            <i class="bi bi-person-circle text-primary"></i>
+                                            <span class="fw-semibold">{{ reponse.auteur.username }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">{{ reponse.date_creation|date:"d/m/Y à H:i" }}</small>
+                                </div>
+                                <div class="text-muted" style="white-space: pre-wrap;">{{ reponse.message }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card card-custom mt-4 fade-in">
+                <div class="card-body p-5 text-center">
+                    <i class="bi bi-chat-dots display-1 text-muted mb-4"></i>
+                    <h4 class="h5 mb-3">Aucune réponse pour le moment</h4>
+                    <p class="text-muted mb-4">Notre équipe traitera votre demande et vous répondra bientôt.</p>
+                   <!--  <a href="{% url 'ajouter_reponse' requete.pk %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-plus-circle me-2"></i>Ajouter une précision
+                    </a> -->
+
+                      <a href="#" class="btn btn-success btn-custom">
+                        <i class="bi bi-plus-circle me-2"></i>Ajouter une précision
+                    </a> 
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

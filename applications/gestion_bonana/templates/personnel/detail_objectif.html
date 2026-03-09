@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ personnel.utilisateur.email }}{% endblock %}
+
+{% block contenu %}
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail Objectif - {{ objectif.intitule }}</title>
+
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête de l'objectif -->
+        <div class="card objectif-header">
+            <h1>{{ objectif.intitule }}</h1>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">📅 Période</span>
+                    <span class="info-value">{{ objectif.date_debut }} au {{ objectif.date_fin }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🔄 Périodicité</span>
+                    <span class="info-value">{{ objectif.get_periodicite_display }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">💰 Prime</span>
+                    <span class="info-value" style="font-weight: bold;">{{ objectif.prime_objectif }} FC</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🎯 Statut Postulation</span>
+                    <span class="statut-badge 
+                        {% if postulation.statut == 'accepte' %}badge-success
+                        {% elif postulation.statut == 'rejete' %}badge-error
+                        {% else %}badge-warning{% endif %}">
+                        {% if postulation.statut == 'accepte' %}✅ 
+                        {% elif postulation.statut == 'rejete' %}❌ 
+                        {% else %}⏳{% endif %}
+                        {{ postulation.get_statut_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {% if performance %}
+        <!-- Section Progression -->
+        <div class="progression-section">
+            <div class="progression-header">
+                <h2>📊 Votre Progression</h2>
+                <span class="statut-badge 
+                    {% if performance.statut == 'atteint' %}badge-success
+                    {% elif performance.statut == 'en_cours' %}badge-info
+                    {% else %}badge-warning{% endif %}">
+                    {% if performance.statut == 'atteint' %}🎉 
+                    {% elif performance.statut == 'en_cours' %}🚀 
+                    {% else %}⏳{% endif %}
+                    {{ performance.get_statut_display }}
+                </span>
+            </div>
+
+            <!-- Statistiques de progression -->
+            <div class="progression-stats">
+                <div class="stat-card">
+                    <div class="stat-number">{{ performance.nombre_filleuls_qualifies }}</div>
+                    <div class="stat-label">Filleuls Qualifiés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ objectif.nombre_filleuls_requis }}</div>
+                    <div class="stat-label">Objectif Requis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ performance.progression_pourcentage }}%</div>
+                    <div class="stat-label">Progression</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">
+                        {% if performance.jours_restants > 0 %}
+                            {{ performance.jours_restants }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Jours Restants</div>
+                </div>
+            </div>
+
+            <!-- Barre de progression avancée -->
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-title">Progression vers l'objectif</span>
+                    <span class="progress-percentage">{{ performance.progression_pourcentage }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ performance.progression_pourcentage }}%;"></div>
+                </div>
+                <div class="progress-details">
+                    <span>{{ performance.nombre_filleuls_qualifies }} filleuls qualifiés</span>
+                    <span>{{ objectif.nombre_filleuls_requis }} requis</span>
+                </div>
+            </div>
+
+            <!-- Timeline de progression -->
+            <div class="timeline">
+                <div class="timeline-step step-active">
+                    <div class="step-dot"></div>
+                    <span class="step-label">Début</span>
+                </div>
+                <div class="timeline-step {% if performance.progression_pourcentage >= 25 %}step-active{% endif %}">
+                    <div class="step-dot"></div>
+                    <span class="step-label">25%</span>
+                </div>
+                <div class="timeline-step {% if performance.progression_pourcentage >= 50 %}step-active{% endif %}">
+                    <div class="step-dot"></div>
+                    <span class="step-label">50%</span>
+                </div>
+                <div class="timeline-step {% if performance.progression_pourcentage >= 75 %}step-active{% endif %}">
+                    <div class="step-dot"></div>
+                    <span class="step-label">75%</span>
+                </div>
+                <div class="timeline-step {% if performance.progression_pourcentage >= 100 %}step-active{% endif %}">
+                    <div class="step-dot"></div>
+                    <span class="step-label">Objectif</span>
+                </div>
+            </div>
+
+            <!-- Indicateur de performance -->
+            <div class="performance-indicator">
+                <div class="performance-icon">
+                    {% if performance.progression_pourcentage >= 100 %}
+                    🎉
+                    {% elif performance.progression_pourcentage >= 75 %}
+                    🚀
+                    {% elif performance.progression_pourcentage >= 50 %}
+                    📈
+                    {% else %}
+                    🎯
+                    {% endif %}
+                </div>
+                <div class="performance-content">
+                    <div class="performance-title">
+                        {% if performance.progression_pourcentage >= 100 %}
+                        Objectif Atteint !
+                        {% elif performance.progression_pourcentage >= 75 %}
+                        Excellent Progression
+                        {% elif performance.progression_pourcentage >= 50 %}
+                        Bonne Avancée
+                        {% else %}
+                        Continuez vos efforts
+                        {% endif %}
+                    </div>
+                    <div class="performance-description">
+                        {% if performance.progression_pourcentage >= 100 %}
+                        Félicitations ! Vous avez atteint l'objectif.
+                        {% elif performance.progression_pourcentage >= 75 %}
+                        Plus que quelques filleuls pour atteindre l'objectif.
+                        {% elif performance.progression_pourcentage >= 50 %}
+                        Vous êtes à mi-chemin de l'objectif.
+                        {% else %}
+                        Le parcours commence, continuez sur cette lancée.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des Filleuls -->
+        <div class="filleuls-section">
+            <div class="section-header">
+                <h2>👥 Mes Filleuls</h2>
+            </div>
+            
+            {% if filleuls %}
+                <div class="table-responsive">
+                    <table class="filleuls-table">
+                        <thead>
+                            <tr>
+                                <th>Filleul</th>
+                                <th>Produit</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for filleul in filleuls %}
+                            <tr>
+                                <td data-label="Filleul">{{ filleul.filleul.get_full_name|default:filleul.filleul.email }}</td>
+                                <td data-label="Produit">
+                                    {% if filleul.produit_achete %}
+                                        {{ filleul.produit_achete.nom }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-label="Montant">
+                                    {% if filleul.montant_achat %}
+                                        {{ filleul.montant_achat }} FC
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td data-label="Date">{{ filleul.date_parrainage|date:"d/m/Y" }}</td>
+                                <td data-label="Statut">
+                                    <span class="eligibility-badge {% if filleul.est_eligible %}badge-eligible{% else %}badge-pending{% endif %}">
+                                        {% if filleul.est_eligible %}
+                                            ✅ Éligible
+                                        {% else %}
+                                            ⏳ En attente
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">👥</div>
+                    <h3>Aucun filleul parrainé</h3>
+                    <p>Aucun filleul n'a été parrainé pour cet objectif pour le moment.</p>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- Postulation en attente -->
+        <div class="card">
+            <div class="empty-state">
+                <div class="empty-icon">⏳</div>
+                <h3>Postulation en attente</h3>
+                <p>Votre postulation est en attente de validation. Vous recevrez une notification une fois qu'elle sera traitée.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="action-buttons">
+            <a href="{% url 'personnel:tableau_de_bord' %}" class="btn btn-outline">
+                ← Retour au tableau de bord
+            </a>
+            {% if performance and performance.statut == 'en_cours' %}
+            <a href="#" class="btn btn-primary">
+                🎯 Continuer le parrainage
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ personnel.utilisateur.email }}{% endblock %}
+
+{% block contenu %}
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Postulations</title>
+
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête de page -->
+        <div class="card page-header">
+            <h1>📋 Mes Postulations</h1>
+            <p class="page-subtitle">Historique de toutes vos candidatures aux objectifs</p>
+        </div>
+
+        <!-- Statistiques rapides -->
+        {% if postulations %}
+        <div class="stats-overview">
+            <div class="stat-item">
+                <div class="stat-number">{{ postulations|length }}</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ postulations_acceptees|length }}</div>
+                <div class="stat-label">Acceptées</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ postulations_en_attente|length }}</div>
+                <div class="stat-label">En attente</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ taux_acceptation }}%</div>
+                <div class="stat-label">Taux réussite</div>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters">
+            <button class="filter-btn active">Toutes</button>
+            <button class="filter-btn">Acceptées</button>
+            <button class="filter-btn">En attente</button>
+            <button class="filter-btn">Rejetées</button>
+            <button class="filter-btn">En cours</button>
+            <button class="filter-btn">Terminées</button>
+        </div>
+        {% endif %}
+
+        <!-- Contenu principal -->
+        <div class="card">
+            {% if postulations %}
+                <div class="postulations-grid">
+                    {% for postulation in postulations %}
+                    <div class="postulation-card">
+                        <!-- En-tête avec statut -->
+                        <div class="card-header-compact">
+                            <h3>{{ postulation.objectif.intitule }}</h3>
+                            <span class="statut-badge 
+                                {% if postulation.statut == 'accepte' %}badge-accepted
+                                {% elif postulation.statut == 'rejete' %}badge-rejected
+                                {% else %}badge-pending{% endif %}">
+                                {% if postulation.statut == 'accepte' %}✅ 
+                                {% elif postulation.statut == 'rejete' %}❌ 
+                                {% else %}⏳{% endif %}
+                                {{ postulation.get_statut_display }}
+                            </span>
+                        </div>
+
+                        <!-- Informations de la postulation -->
+                        <div class="postulation-info">
+                            <div class="info-item">
+                                <span class="info-label">📅 Postulé le</span>
+                                <span class="info-value">{{ postulation.date_postulation|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">💰 Prime</span>
+                                <span class="info-value" style="color: var(--success-color); font-weight: 600;">
+                                    {{ postulation.objectif.prime_objectif }} FC
+                                    {% if postulation.objectif.prime_objectif >= 75000 %}
+                                    <span class="ranking-badge ranking-high">🏆</span>
+                                    {% elif postulation.objectif.prime_objectif >= 50000 %}
+                                    <span class="ranking-badge ranking-medium">⭐</span>
+                                    {% else %}
+                                    <span class="ranking-badge ranking-low">📈</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">👥 Objectif</span>
+                                <span class="info-value">{{ postulation.objectif.nombre_filleuls_requis }} filleuls</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🔄 Périodicité</span>
+                                <span class="info-value">{{ postulation.objectif.get_periodicite_display }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Indicateur de période -->
+                        <div class="period-indicator">
+                            <span class="period-dot {% if postulation.objectif.est_en_cours %}period-active{% else %}period-ended{% endif %}"></span>
+                            <span>
+                                {% if postulation.objectif.est_en_cours %}
+                                    🟢 En cours - {{ postulation.objectif.date_fin|timeuntil }} restant
+                                {% else %}
+                                    ⚫ Terminé le {{ postulation.objectif.date_fin|date:"d/m/Y" }}
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Progression (si acceptée) -->
+                        {% if postulation.statut == 'accepte' and postulation.performance %}
+                        <div class="progress-compact">
+                            <div class="progress-header">
+                                <span class="progress-label">Progression</span>
+                                <span class="progress-percentage">{{ postulation.performance.progression_pourcentage }}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ postulation.performance.progression_pourcentage }}%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Indicateur de performance -->
+                        <div class="performance-indicator">
+                            <span>📊</span>
+                            <span class="performance-text">
+                                {{ postulation.performance.nombre_filleuls_qualifies }}/{{ postulation.objectif.nombre_filleuls_requis }} filleuls qualifiés
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Actions -->
+                        <div class="actions">
+                            <a href="{% url 'personnel:detail_objectif' postulation.objectif.id %}" class="btn btn-outline">
+                                📋 Détails
+                            </a>
+                            {% if postulation.statut == 'accepte' and postulation.objectif.est_en_cours %}
+                            <a href="#" class="btn btn-primary">
+                                🎯 Continuer
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- État vide -->
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>Aucune postulation</h3>
+                    <p>Vous n'avez postulé à aucun objectif pour le moment.</p>
+                    <a href="{% url 'personnel:liste_objectifs' %}" class="btn btn-primary">
+                        Découvrir les objectifs
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions de navigation -->
+        <div class="actions" style="justify-content: center; margin-top: 1.5rem;">
+            <a href="{% url 'personnel:tableau_de_bord' %}" class="btn btn-secondary">
+                ← Retour au tableau de bord
+            </a>
+            {% if postulations %}
+            <a href="{% url 'personnel:liste_objectifs' %}" class="btn btn-primary">
+                📋 Voir plus d'objectifs
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

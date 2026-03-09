@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<link rel="stylesheet" href="{% static 'css/connexion.css' %}">
+
+<script>
+// Forcer le rechargement si la page vient du cache ou si elle est servie depuis le cache
+(function() {
+    'use strict';
+    
+    // Vérifier si la page vient du cache (navigation back/forward)
+    if (window.performance && window.performance.navigation) {
+        const navType = window.performance.navigation.type;
+        if (navType === window.performance.navigation.TYPE_BACK_FORWARD) {
+            console.log('[Connexion] Page depuis le cache (back/forward), rechargement...');
+            window.location.reload(true);
+            return;
+        }
+    }
+    
+    // Vérifier si la page est servie depuis le cache du service worker
+    if (window.performance && window.performance.getEntriesByType) {
+        const entries = window.performance.getEntriesByType('navigation');
+        if (entries.length > 0) {
+            const navEntry = entries[0];
+            // Si transferSize est 0, la page vient du cache
+            if (navEntry.transferSize === 0 && navEntry.type !== 'navigate') {
+                console.log('[Connexion] Page servie depuis le cache, rechargement...');
+                window.location.reload(true);
+                return;
+            }
+        }
+    }
+    
+    // Vérifier que le token CSRF est présent et valide
+    function checkCSRFToken() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfCookie = getCookie('csrftoken');
+        
+        if (!csrfToken || !csrfToken.value) {
+            console.warn('[Connexion] Token CSRF manquant dans le formulaire, rechargement...');
+            window.location.reload(true);
+            return false;
+        }
+        
+        if (!csrfCookie) {
+            console.warn('[Connexion] Cookie CSRF manquant, rechargement...');
+            window.location.reload(true);
+            return false;
+        }
+        
+        console.log('[Connexion] Token CSRF présent et valide');
+        return true;
+    }
+    
+    // Fonction pour récupérer un cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Vérifier immédiatement et après le chargement du DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkCSRFToken, 100); // Petit délai pour s'assurer que tout est chargé
+        });
+    } else {
+        setTimeout(checkCSRFToken, 100);
+    }
+    
+    // Empêcher le cache de cette page
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        // Envoyer un message au service worker pour ne pas mettre en cache
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SKIP_CACHE',
+            url: window.location.href
+        });
+    }
+    
+    // Forcer le rechargement si la page est en cache (détection via Date header)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            console.log('[Connexion] Page restaurée depuis le cache, rechargement...');
+            window.location.reload(true);
+        }
+    });
+})();
+</script>
+
+<div class="container">
+    <h1>Connexion</h1>
+    <form method="post" action="{% url 'connexion' %}" id="loginForm" novalidate>
+        {% csrf_token %}
+        <div>
+            <label for="email">
+                <i class="fas fa-user"></i> Nom d'utilisateur
+            </label>
+            <input type="text" id="email" name="email" placeholder="Entrez votre nom" required autofocus>
+        </div>
+        <div>
+            <label for="mot_de_passe">
+                <i class="fas fa-lock"></i> Mot de passe
+            </label>
+            <input type="password" id="mot_de_passe" name="mot_de_passe" placeholder="Entrez votre mot de passe" required>
+        </div>
+        <button type="submit" id="submitBtn">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+        </button>
+    </form>
+
+    <p>Pas encore de compte ? <a href="{% url 'inscription' %}">S'inscrire maintenant</a></p>
+</div>
+
+<script>
+// Empêcher la double soumission et vérifier le token avant envoi
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfToken || !csrfToken.value) {
+        e.preventDefault();
+        alert('Erreur: Token de sécurité manquant. Veuillez recharger la page.');
+        window.location.reload(true);
+        return false;
+    }
+    
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn.disabled) {
+        e.preventDefault();
+        return false;
+    }
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+});
+</script>
+
+
+<!-- ===== Modal d’erreur ===== -->
+<div id="errorModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-title">Erreur</div>
+        <div id="errorMessage"></div>
+        <button class="btn-close">OK</button>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .modal-backdrop.show { display: flex; }
+
+    .modal-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 400px;
+        width: calc(100% - 40px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        text-align: center;
+        animation: fadeIn .25s ease;
+    }
+    @keyframes fadeIn {
+        from {opacity:0; transform:translateY(15px);}
+        to   {opacity:1; transform:translateY(0);}
+    }
+    .modal-title {
+        font-size: 1.2rem;
+        color: #b00020;
+        margin-bottom: 10px;
+    }
+    .btn-close {
+        margin-top: 15px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #b00020;
+        color: white;
+        cursor: pointer;
+    }
+    .btn-close:hover { opacity: 0.9; }
+</style>
+
+{% if messages %}
+<script>
+    let messages = [
+        {% for message in messages %}
+            { level: "{{ message.tags }}", text: "{{ message|escapejs }}" },
+        {% endfor %}
+    ];
+    let errorMsg = messages.find(m => m.level.includes("error"));
+    if (errorMsg) {
+        window.onload = function() {
+            let modal = document.getElementById("errorModal");
+            let msgBox = document.getElementById("errorMessage");
+            msgBox.textContent = errorMsg.text;
+            modal.classList.add("show");
+
+            let closeBtns = modal.querySelectorAll(".btn-close");
+            closeBtns.forEach(btn => btn.onclick = () => modal.classList.remove("show"));
+
+            modal.onclick = (e) => { if(e.target === modal) modal.classList.remove("show"); };
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") modal.classList.remove("show");
+            });
+        };
+    }
+</script>
+{% endif %}
+{% endblock %}

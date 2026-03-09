@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Accueil{% endblock %}
+
+{% block contenu %}
+<div class="text-center mb-5 fade-in">
+  <h1 class="fw-bold mb-3 display-5" style="color: var(--text-primary);">Bienvenue sur votre espace d'annonces</h1>
+  <p class="lead text-muted mb-4" style="font-size: 1.25rem; max-width: 600px; margin: 0 auto;">
+    Consultez ici les actualités et les annonces de l'équipe Genius Africa
+  </p>
+</div>
+
+<div class="row g-4 justify-content-center">
+  <!-- Annonces Publiques -->
+  <div class="col-xl-5 col-lg-6 col-md-10">
+    <div class="card h-100 border-0 shadow-hover">
+      <div class="card-body p-5 text-center d-flex flex-column">
+        <div class="mb-4">
+          <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-megaphone display-6 text-primary"></i>
+          </div>
+          <h3 class="fw-semibold mb-3" style="color: var(--text-primary);">Annonces Publiques</h3>
+          <p class="text-muted mb-4 fs-6" style="line-height: 1.6;">
+            Consultez les messages diffusés à tous les utilisateurs de la plateforme
+          </p>
+        </div>
+        <div class="mt-auto">
+          <a href="{% url 'announcements:public_list' %}" class="btn btn-primary btn-lg px-4 rounded-pill fw-medium">
+            <i class="bi bi-eye me-2"></i> Voir les annonces
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Annonces Personnelles -->
+  <div class="col-xl-5 col-lg-6 col-md-10">
+    <div class="card h-100 border-0 shadow-hover">
+      <div class="card-body p-5 text-center d-flex flex-column">
+        <div class="mb-4">
+          <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-bell display-6 text-success"></i>
+          </div>
+          <h3 class="fw-semibold mb-3" style="color: var(--text-primary);">Annonces Personnelles</h3>
+          <p class="text-muted mb-4 fs-6" style="line-height: 1.6;">
+            Accédez aux messages et notifications qui vous sont personnellement destinés
+          </p>
+        </div>
+        <div class="mt-auto">
+          <a href="{% url 'announcements:personal_list' %}" class="btn btn-success btn-lg px-4 rounded-pill fw-medium">
+            <i class="bi bi-person me-2"></i> Voir mes annonces
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

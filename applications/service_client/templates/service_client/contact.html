@@ -1,0 +1,114 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Contact - Service Client{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-5 mb-5 fade-in">
+    <h1 class="display-4 fw-bold text-primary mb-3">Nous contacter</h1>
+    <p class="lead text-muted">Plusieurs moyens de nous joindre pour obtenir de l'aide</p>
+</div>
+
+<!-- Contact Options -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 text-center fade-in">
+            <div class="card-body p-5">
+                <div class="icon-circle blue mx-auto">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <h3 class="card-title h4 mb-3">Support par requête</h3>
+                <p class="card-text text-muted mb-4">Créez une requête de support pour un suivi détaillé de votre demande.</p>
+
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Suivi en temps réel
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Historique des échanges
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Priorité personnalisable
+                    </li>
+                </ul>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'creer_requete' %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-plus-circle me-2"></i>Créer une requête
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 text-center fade-in">
+            <div class="card-body p-5">
+                <div class="icon-circle green mx-auto">
+                    <i class="bi bi-telephone"></i>
+                </div>
+                <h3 class="card-title h4 mb-3">Contact direct</h3>
+                <p class="card-text text-muted mb-4">Pour les urgences ou questions simples, contactez-nous directement.</p>
+
+                <div class="text-start">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-telephone text-success"></i>
+                        <strong>Téléphone whatsapp:</strong>
+                        <a href="#" class="text-decoration-none">+243847481033</a>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-envelope text-success"></i>
+                        <strong Groupe genius:</strong>
+                        <a href="https://chat.whatsapp.com/GXNvFtN5q1c8VVl6m746Ss" class="text-decoration-none">Intégrer le groupe Whatsapp</a>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock text-success"></i>
+                        <strong>Horaires:</strong>
+                        <span class="text-muted">tous les jours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Value Props -->
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle light-blue mx-auto">
+                <i class="bi bi-clock"></i>
+            </div>
+            <h4 class="h5 mb-2">Réponse rapide</h4>
+            <p class="text-muted small">Nous nous engageons à répondre dans les 24h ouvrées</p>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle yellow mx-auto">
+                <i class="bi bi-people"></i>
+            </div>
+            <h4 class="h5 mb-2">Équipe dédiée</h4>
+            <p class="text-muted small">Une équipe d'experts à votre service</p>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle red mx-auto">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h4 class="h5 mb-2">Confidentialité</h4>
+            <p class="text-muted small">Vos données sont protégées et sécurisées</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

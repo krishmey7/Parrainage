@@ -1,0 +1,61 @@
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+    <h1>Gestion des Dépôts</h1>
+{% endblock %}
+
+{% block result_list %}
+    <!-- Affichage des totaux -->
+    <div class="results">
+        <h2>Totaux</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th><div class="text"><span>Type</span></div></th>
+                    <th><div class="text"><span>Montant total</span></div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row-total">
+                    <td> Total des dépôts </td>
+                    <td> {{ total_depots|default:"0" }} CDF </td>
+                </tr>
+                <tr class="row-confirmed">
+                    <td> Dépôts confirmés </td>
+                    <td> {{ total_confirme|default:"0" }} CDF </td>
+                </tr>
+                <tr class="row-pending">
+                    <td> Dépôts en attente </td>
+                    <td> {{ total_en_attente|default:"0" }} CDF </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        {% if methodes_stats %}
+        <h2 style="margin-top: 20px;">Statistiques par méthode de paiement</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th><div class="text"><span>Méthode</span></div></th>
+                    <th><div class="text"><span>Montant total</span></div></th>
+                    <th><div class="text"><span>Nombre</span></div></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in methodes_stats %}
+                <tr>
+                    <td> {{ stat.methode }} </td>
+                    <td> {{ stat.total|default:"0" }} CDF </td>
+                    <td> {{ stat.count }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    <!-- Liste normale des dépôts -->
+    {{ block.super }}
+{% endblock %}
+
+{% block pagination %}{{ block.super }}{% endblock %}

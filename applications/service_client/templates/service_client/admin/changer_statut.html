@@ -1,0 +1,60 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Admin - Changer le statut - Requête #{{ requete.id }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Changer le statut - Requête #{{ requete.id }}</h2>
+    </div>
+    <div class="card-body">
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem;">
+            <h4>{{ requete.titre }}</h4>
+            <p style="margin: 0.5rem 0 0 0; color: #666;">{{ requete.description|truncatewords:20 }}</p>
+            <p style="margin: 0.5rem 0 0 0; color: #666;"><strong>Utilisateur :</strong> {{ requete.utilisateur.username }}</p>
+            <p style="margin: 0.5rem 0 0 0; color: #666;"><strong>Statut actuel :</strong> 
+                {% if requete.statut == 'non_traite' %}
+                    <span class="badge badge-danger">{{ requete.get_statut_display }}</span>
+                {% elif requete.statut == 'en_cours' %}
+                    <span class="badge badge-warning">{{ requete.get_statut_display }}</span>
+                {% elif requete.statut == 'traite' %}
+                    <span class="badge badge-success">{{ requete.get_statut_display }}</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="statut">Nouveau statut *</label>
+                <select id="statut" name="statut" class="form-control" required>
+                    {% for value, label in statuts %}
+                        <option value="{{ value }}" {% if requete.statut == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-warning">Changer le statut</button>
+                <a href="{% url 'admin_detail_requete' requete.pk %}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Signification des statuts</h3>
+    </div>
+    <div class="card-body">
+        <ul style="list-style-type: disc; margin-left: 2rem; line-height: 1.8;">
+            <li><strong>Non traité :</strong> La requête vient d'être créée et n'a pas encore été prise en charge.</li>
+            <li><strong>En cours de traitement :</strong> L'équipe travaille sur cette requête.</li>
+            <li><strong>Traité :</strong> La requête a été résolue et fermée.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

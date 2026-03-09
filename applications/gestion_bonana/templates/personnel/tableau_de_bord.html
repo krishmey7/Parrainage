@@ -1,0 +1,242 @@
+<!-- templates/personnel/tableau_de_bord.html -->
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ personnel.utilisateur.email }}{% endblock %}
+
+{% block contenu %}
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - {{ personnel.utilisateur.get_full_name }}</title>
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- En-tête du tableau de bord -->
+        <div class="card welcome-card">
+            <h1>Genius challenge <strong>Bonana</strong> </h1>
+            <div class="welcome-content">
+                <div>
+                    <p class="welcome-text">Bienvenue, <strong>{{ personnel.utilisateur.email }}</strong> !</p>
+                    <div class="user-info">
+                        <span class="info-badge poste-badge">{{ personnel.poste }}</span>
+                        <span class="info-badge matricule-badge">Matricule : {{ personnel.matricule }}</span>
+                    </div>
+                </div>
+                <!-- Indicateur de performance -->
+                <div class="performance-indicator">
+                    <span>📊 Performance :</span>
+                    <span class="performance-value">
+                        {% if stats_mensuelles.performance >= 80 %}
+                            Excellent
+                        {% elif stats_mensuelles.performance >= 60 %}
+                            Bon
+                        {% else %}
+                            En progression
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">{{ stats_mensuelles.total_filleuls|default:0 }}</div>
+                <div class="stat-label">Filleuls ce mois</div>
+                {% if stats_mensuelles.evolution_filleuls > 0 %}
+                <div style="font-size: 0.7rem; color: var(--success-color); margin-top: 0.25rem;">
+                    ↗ +{{ stats_mensuelles.evolution_filleuls }}%
+                </div>
+                {% endif %}
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number">{{ stats_mensuelles.total_primes|default:0 }} FC</div>
+                <div class="stat-label">Primes ce mois</div>
+                {% if stats_mensuelles.evolution_primes > 0 %}
+                <div style="font-size: 0.7rem; color: var(--success-color); margin-top: 0.25rem;">
+                    ↗ +{{ stats_mensuelles.evolution_primes }}%
+                </div>
+                {% endif %}
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-number">{{ objectifs_actifs|length }}</div>
+                <div class="stat-label">Objectifs en cours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number">{{ personnel.anciennete_mois }}</div>
+                <div class="stat-label">Mois d'ancienneté</div>
+            </div>
+        </div>
+
+        <!-- Objectifs en Cours -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Mes Objectifs en Cours</h2>
+                {% if objectifs_actifs %}
+                    <span class="badge-count">{{ objectifs_actifs|length }}</span>
+                {% endif %}
+            </div>
+            
+            {% if objectifs_actifs %}
+                <div class="objectif-grid">
+                    {% for item in objectifs_actifs %}
+                    <div class="objectif-card">
+                        <!-- En-tête avec classement -->
+                        <div class="card-header-compact">
+                            <h3>{{ item.objectif.intitule }}</h3>
+                            <!-- Badge de classement basé sur la prime -->
+                            {% if item.objectif.prime_objectif >= 100000 %}
+                            <div class="ranking-badge ranking-premium">🏆 Premium</div>
+                            {% elif item.objectif.prime_objectif >= 50000 %}
+                            <div class="ranking-badge ranking-excellent">⭐ Excellent</div>
+                            {% elif item.objectif.prime_objectif >= 25000 %}
+                            <div class="ranking-badge ranking-good">🔥 Populaire</div>
+                            {% else %}
+                            <div class="ranking-badge ranking-normal">📈 Standard</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Indicateur de statut -->
+                        <div class="statut-compact">
+                            <span class="statut-dot statut-en-cours"></span>
+                            <span style="font-size: 0.75rem; color: var(--success-color); font-weight: 500;">
+                                🟢 Actif
+                            </span>
+                        </div>
+
+                        <!-- Badge de performance -->
+                        {% if item.progression >= 80 %}
+                        <div class="performance-badge badge-excellent">🎯 Excellent</div>
+                        {% elif item.progression >= 60 %}
+                        <div class="performance-badge badge-good">👍 Bon</div>
+                        {% else %}
+                        <div class="performance-badge badge-average">📈 En cours</div>
+                        {% endif %}
+
+                        <!-- Grille de détails compacte -->
+                        <div class="details-grid">
+                            <div class="detail-item-compact">
+                                <span class="detail-label">📅 Période</span>
+                                <span class="detail-value" style="font-size: 0.75rem;">{{ item.objectif.date_debut|date:"d/m" }} - {{ item.objectif.date_fin|date:"d/m" }}</span>
+                            </div>
+                            <div class="detail-item-compact">
+                                <span class="detail-label">👥 Requis</span>
+                                <span class="detail-value">{{ item.objectif.nombre_filleuls_requis }}</span>
+                            </div>
+                            <div class="detail-item-compact">
+                                <span class="detail-label">💰 Prime</span>
+                                <span class="detail-value prime-highlight">{{ item.objectif.prime_objectif }} FC</span>
+                            </div>
+                            <div class="detail-item-compact">
+                                <span class="detail-label">🎯 Atteints</span>
+                                <span class="detail-value">{{ item.filleuls_actuels|default:0 }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Barre de progression -->
+                        <div class="progress-compact">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ item.progression|default:0 }}%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progression</span>
+                                <span>{{ item.progression|default:0 }}%</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="btn-group-compact">
+                            <a href="{% url 'personnel:detail_objectif' item.objectif.id %}" class="btn btn-outline">
+                                📋 Détails
+                            </a>
+                            {% if item.progression >= 100 %}
+                            <button class="btn btn-primary" disabled>
+                                ✅ Atteint
+                            </button>
+                            {% else %}
+                            <button class="btn btn-primary">
+                                🎯 Continuer
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <h3>Aucun objectif en cours</h3>
+                    <p>Vous n'avez aucun objectif en cours pour le moment.</p>
+                    <a href="{% url 'personnel:liste_objectifs' %}" class="btn btn-primary">
+                        Postuler à un objectif
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Primes Récentes -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Primes Récentes</h2>
+                {% if primes_recentes %}
+                    <span class="badge-count">{{ primes_recentes|length }}</span>
+                {% endif %}
+            </div>
+            
+            {% if primes_recentes %}
+                <div class="table-responsive">
+                    <table class="primes-table">
+                        <thead>
+                            <tr>
+                                <th>Objectif</th>
+                                <th>Montant</th>
+                                <th>Filleuls</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prime in primes_recentes %}
+                            <tr>
+                                <td data-label="Objectif">{{ prime.objectif.intitule }}</td>
+                                <td data-label="Montant" class="montant-prime">
+                                    {{ prime.montant_prime }} FC
+                                </td>
+                                <td data-label="Filleuls">{{ prime.nombre_filleuls_qualifies }}</td>
+                                <td data-label="Date">{{ prime.date_versement|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">💰</div>
+                    <h3>Aucune prime reçue</h3>
+                    <p>Aucune prime reçue pour le moment.</p>
+                </div>
+            {% endif %}
+            
+            {% if primes_recentes %}
+            <div class="card-footer">
+                <a href="{% url 'personnel:historique_primes' %}" class="btn btn-outline">
+                    Voir tout l'historique
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+{% endblock %}

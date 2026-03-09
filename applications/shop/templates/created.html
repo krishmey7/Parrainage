@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contenu %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Commande</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row justify-content-center mx-0">
+            <div class="col-12 px-0">
+                <div class="card confirmation-card">
+                    <div class="header-section text-center">
+                        <h2>Confirmation du dépôt</h2>
+                    </div>
+                    
+                    <div class="order-details">
+                        <div class="order-number">
+                            Référence: {{ order }}
+                        </div>
+                        
+                        <div class="note-box">
+                            <h5>Procédure de paiement</h5>
+                            <p>Après avoir effectué votre paiement, veuillez saisir la référence de transaction dans le formulaire de suivi pour mettre à jour le statut de votre commande.</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <a href="{% url 'submit_reference' %}" class="btn btn-payment">
+                                Saisir la référence de paiement
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <p class="text-muted mb-2">Besoin d'assistance ? <a href="#">Contactez notre service client</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

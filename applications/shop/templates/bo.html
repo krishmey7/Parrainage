@@ -1,0 +1,55 @@
+
+{% extends 'base.html' %}
+
+{% block contenu %}
+<div class="payment-container">
+  <div class="diamond-background">
+    <div class="diamond-shape"></div>
+    <div class="diamond-shape"></div>
+    <div class="diamond-shape"></div>
+    <div class="diamond-shape"></div>
+    <div class="diamond-shape"></div>
+  </div>
+  
+  <div class="payment-card">
+    <div class="card-header">
+      <div class="money-icon">$</div>
+      <h2 class="payment-title">Faire un dépôt</h2>
+    </div>
+    
+    <form method="post" class="payment-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="payment-method" class="form-label">
+          <i class="icon">💳</i> Méthode de paiement
+        </label>
+        <div class="select-wrapper">
+          <select id="payment-method" name="name" class="form-select" required>
+            <option value="" disabled selected>Sélectionnez une méthode</option>
+            <option value="Orange_money">Orange money</option>
+            <option value="M_pesa">M-pesa</option>
+            <option value="Airtel_money">Airtel money</option>
+            <option value="Afrimoney">Afrimoney</option>
+        
+          </select>
+          <div class="select-arrow">▼</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="amount" class="form-label">
+          <i class="icon">💰</i> Montant (CDF)
+        </label>
+        <input type="number" id="amount" name="amount" step="0.01" min="0" class="form-input" placeholder="Entrez le montant" required>
+      </div>
+      
+      <button type="submit" class="submit-button">
+        <span class="button-text">faire un dépôt</span>
+        <span class="button-icon">→</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

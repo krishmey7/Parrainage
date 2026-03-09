@@ -1,0 +1,467 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}Plateforme Genius Africa{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Feuilles de style -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{% url 'tableau_de_bord' %}">
+                   <img class="img" style='background: black;' src="{% static 'image/Genius_Africa.png' %}" alt="img" width=60 height=60>
+                    <span class="logo-text">Genius Africa</span>
+                </a>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div style='padding : 4px;' class="header-right">
+                <!-- Icônes de notification et annonce -->
+                <div class="header-icons">
+                    <!-- Icône annonce -->
+                    <div class="dropdown" id="annonce-dropdown">
+                        <div class="icon-container">
+                            <button class="icon-btn" onclick="toggleDropdown('annonce')">
+                                <i class="fas fa-bullhorn"></i>
+                            </button>
+                            <span class="notification-badge" id="annonce-badge" style="display: none;">0</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-header">
+                                <span class="dropdown-title">Annonces Publiques</span>
+                                <button class="mark-all-read" onclick="markAllAsRead('public')">Tout marquer comme lu</button>
+                            </div>
+                            <div class="dropdown-body">
+                                <ul class="message-list" id="annonce-list">
+                                    {% if public_announcements %}
+                                        {% for announcement in public_announcements %}
+                                        <li class="message-item unread"
+                                            data-id="public_{{ announcement.id }}"
+                                            onclick="markAsRead(this, 'public', '{{ announcement.id }}')">
+                                            <div class="message-content">
+                                                <div class="message-title">{{ announcement.title }}</div>
+                                                <div class="message-text">{{ announcement.content|truncatewords:15 }}</div>
+                                                <div class="message-time">{{ announcement.created_at|timesince }}</div>
+                                            </div>
+                                            <div class="message-actions">
+                                                <button class="message-action" onclick="event.stopPropagation(); markAsRead(this.parentElement.parentElement, 'public', '{{ announcement.id }}')">
+                                                    Marquer comme lu
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="empty-message">
+                                            <i class="fas fa-bullhorn" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p>Aucune annonce publique pour le moment</p>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="{% url 'public_announcements' %}" class="view-all">Voir toutes les annonces</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Icône notification -->
+                    <div class="dropdown" id="notification-dropdown">
+                        <div class="icon-container">
+                            <button class="icon-btn" onclick="toggleDropdown('notification')">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-header">
+                                <span class="dropdown-title">Vos Notifications</span>
+                                <button class="mark-all-read" onclick="markAllAsRead('personal')">Tout marquer comme lu</button>
+                            </div>
+                            <div class="dropdown-body">
+                                <ul class="message-list" id="notification-list">
+                                    {% if personal_announcements %}
+                                        {% for announcement in personal_announcements %}
+                                        <li class="message-item unread"
+                                            data-id="personal_{{ announcement.id }}"
+                                            onclick="markAsRead(this, 'personal', '{{ announcement.id }}')">
+                                            <div class="message-content">
+                                                <div class="message-title">{{ announcement.title }}</div>
+                                                <div class="message-text">{{ announcement.content|truncatewords:15 }}</div>
+                                                <div class="message-time">{{ announcement.created_at|timesince }}</div>
+                                            </div>
+                                            <div class="message-actions">
+                                                <button class="message-action" onclick="event.stopPropagation(); markAsRead(this.parentElement.parentElement, 'personal', '{{ announcement.id }}')">
+                                                    Marquer comme lu
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="empty-message">
+                                            <i class="fas fa-bell" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p>Aucune notification personnelle</p>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="{% url 'personal_announcements' %}" class="view-all">Voir toutes les notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style='font-size: 3px; padding: 0;' class="user-info">
+                    <div style='font-size: 4px;  '  class="user-avatar">
+                        {{ user.email|first|upper }}
+                    </div>
+
+                </div>
+
+            </div>
+            {% endif %}
+
+            <div class="menu" id="menu">
+                {% if user.is_authenticated %}
+                    <!-- Liens principaux -->
+                    <a href="{% url 'tableau_de_bord' %}">
+                        <i class="fas fa-th-large"></i>
+                        <span class="text">Tableau de bord</span>
+                    </a>
+
+                    <a href="{% url 'create_order' %}" class="bouton">
+                        <i class="fas fa-plus-circle"></i>
+                        <span class="text">dépôt</span>
+                    </a>
+
+                    <a href="{% url 'liste_depots' %}" class="bouton">
+                        <i class="fas fa-list"></i>
+                        <span class="text">Mes dépôts</span>
+                    </a>
+
+                    <a href="{% url 'liste_produits' %}" class="bouton">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="text">trader</span>
+                    </a>
+
+                    <a href="{% url 'tableau_capital' %}" class="bouton">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="text">Mes capital</span>
+                    </a>
+
+
+                    <a href="{% url 'liste_retraits' %}" class="bouton-important">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="text">retrait</span>
+                    </a>
+
+                    <!-- Séparateur visuel -->
+                    <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 0.5rem;"></div>
+
+                    <!-- Boutons de parrainage -->
+                    <a href="{% url 'mon_code_parrainage' %}" class="bouton">
+                        <i class="fas fa-gift"></i>
+                        <span class="text">Parrainage</span>
+                    </a>
+
+                    <a href="{% url 'liste_filleuls' %}" class="bouton">
+                        <i class="fas fa-users"></i>
+                        <span class="text">Mes invités</span>
+                    </a>
+
+                    <a href="{% url 'liste_bonus_parrainage' %}" class="bouton">
+                        <i class="fas fa-coins"></i>
+                        <span class="text">Mes bonus</span>
+                    </a>
+
+                    <a href="{% url 'deconnexion' %}" class="bouton">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="text">Déconnexion</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'connexion' %}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="text">Connexion</span>
+                    </a>
+                    <a href="{% url 'inscription' %}" class="bouton-important">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="text">Inscription</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <span class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </span>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            {% block contenu %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <!-- Votre footer existant... -->
+
+         <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img class="img" style='background: black;' src="{% static 'image/Genius_Africa.png' %}" alt="img" width=60 height=60>
+                    <span>Genius Africa</span>
+                </div>
+                <p class="footer-description">
+                    Trading et investissement :
+                     une solution innovante pour accompagner l'émergence économique de l'Afrique
+                </p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-heading">Liens Rapides</h3>
+                <ul class="footer-links">
+                    <li><a href="{% url 'tableau_de_bord' %}"><i class="fas fa-arrow-right"></i> Tableau de bord</a></li>
+                    <li><a href="{% url 'liste_produits' %}"><i class="fas fa-arrow-right"></i> Trader</a></li>
+                    <li><a href="{% url 'mon_code_parrainage' %}"><i class="fas fa-arrow-right"></i> Programme de parrainage</a></li>
+                    <li><a href="{% url 'faq' %}"><i class="fas fa-arrow-right"></i> FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-heading">Support</h3>
+                <ul class="footer-links">
+                    <li><a href="{% url 'creer_requete' %}"><i class="fas fa-arrow-right"></i> Centre d'aide</a></li>
+                    <li><a href="{% url 'index' %}"><i class="fas fa-arrow-right"></i> Contactez-nous</a></li>
+                    <li><a href="{% url 'politique_confid' %}"><i class="fas fa-arrow-right"></i> Politique de confidentialité</a></li>
+                    <li><a href="{% url 'condition_utilisation' %}"><i class="fas fa-arrow-right"></i> Conditions d'utilisation</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Genius Africa. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Stockage des annonces lues
+        const STORAGE_KEY = 'read_announcements';
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeReadStatus();
+            updateAllBadgeCounts();
+        });
+
+        // Initialiser le statut de lecture des annonces
+        function initializeReadStatus() {
+            const readItems = getReadItems();
+
+            // Marquer les annonces déjà lues
+            document.querySelectorAll('.message-item').forEach(item => {
+                const itemId = item.getAttribute('data-id');
+                if (readItems.includes(itemId)) {
+                    item.classList.remove('unread');
+                }
+            });
+        }
+
+        // Obtenir la liste des annonces lues depuis le localStorage
+        function getReadItems() {
+            const readItems = localStorage.getItem(STORAGE_KEY);
+            return readItems ? JSON.parse(readItems) : [];
+        }
+
+        // Sauvegarder la liste des annonces lues dans le localStorage
+        function saveReadItems(items) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        }
+
+        // Marquer une annonce comme lue
+        function markAsRead(element, type, announcementId) {
+            const itemId = `${type}_${announcementId}`;
+
+            // Marquer visuellement comme lu
+            element.classList.remove('unread');
+
+            // Sauvegarder dans le localStorage
+            const readItems = getReadItems();
+            if (!readItems.includes(itemId)) {
+                readItems.push(itemId);
+                saveReadItems(readItems);
+            }
+
+            // Mettre à jour le compteur
+            updateBadgeCount(type);
+        }
+
+        // Marquer toutes les annonces comme lues
+        function markAllAsRead(type) {
+            const selector = type === 'public' ? '#annonce-list' : '#notification-list';
+            const messages = document.querySelectorAll(`${selector} .message-item`);
+
+            const readItems = getReadItems();
+
+            messages.forEach(message => {
+                const itemId = message.getAttribute('data-id');
+                message.classList.remove('unread');
+
+                if (!readItems.includes(itemId)) {
+                    readItems.push(itemId);
+                }
+            });
+
+            saveReadItems(readItems);
+            updateBadgeCount(type);
+        }
+
+        // Mettre à jour le compteur de badge pour un type
+        function updateBadgeCount(type) {
+            const selector = type === 'public' ? '#annonce-list' : '#notification-list';
+            const badgeId = type === 'public' ? 'annonce-badge' : 'notification-badge';
+
+            const unreadCount = document.querySelectorAll(`${selector} .message-item.unread`).length;
+            const badge = document.getElementById(badgeId);
+
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Mettre à jour tous les compteurs
+        function updateAllBadgeCounts() {
+            updateBadgeCount('public');
+            updateBadgeCount('personal');
+        }
+
+        // Fonctions existantes pour le menu et dropdowns
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("active");
+        }
+
+        function toggleDropdown(type) {
+            const dropdown = document.getElementById(`${type}-dropdown`);
+            dropdown.classList.toggle('active');
+
+            const allDropdowns = document.querySelectorAll('.dropdown');
+            allDropdowns.forEach(d => {
+                if (d.id !== `${type}-dropdown`) {
+                    d.classList.remove('active');
+                }
+            });
+        }
+
+        // Fermer les dropdowns en cliquant à l'extérieur
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('menu');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const isClickInsideMenu = menu.contains(event.target);
+            const isClickOnToggle = menuToggle.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickOnToggle && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        });
+
+        // Nettoyer le localStorage si nécessaire (optionnel)
+        function clearReadHistory() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+
+        // Pour debugger : afficher les annonces lues
+        function debugReadItems() {
+            console.log('Annonces lues:', getReadItems());
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

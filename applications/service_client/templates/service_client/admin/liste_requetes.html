@@ -1,0 +1,122 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Administration - Toutes les Requêtes{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Administration - Toutes les Requêtes</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <span>Total : {{ requetes|length }} requête{{ requetes|length|pluralize }}</span>
+            <a href="{% url 'admin:index' %}" class="btn btn-secondary">Retour à l'admin Django</a>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire de recherche -->
+<div class="search-form">
+    <form method="get">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="q">Rechercher :</label>
+                <input type="text" id="q" name="q" class="form-control" 
+                       placeholder="Titre, description, utilisateur..." 
+                       value="{{ request.GET.q }}">
+            </div>
+            <div class="form-group">
+                <label for="statut">Statut :</label>
+                <select id="statut" name="statut" class="form-control">
+                    <option value="">Tous les statuts</option>
+                    {% for value, label in statuts %}
+                        <option value="{{ value }}" {% if request.GET.statut == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn">Rechercher</button>
+        </div>
+    </form>
+</div>
+
+<!-- Liste des requêtes -->
+{% if requetes %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Utilisateur</th>
+                    <th>Statut</th>
+                    <th>Priorité</th>
+                    <th>Créé le</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for requete in requetes %}
+                    <tr>
+                        <td>#{{ requete.id }}</td>
+                        <td>
+                            <a href="{% url 'admin_detail_requete' requete.pk %}" style="text-decoration: none;">
+                                {{ requete.titre|truncatechars:50 }}
+                            </a>
+                        </td>
+                        <td>{{ requete.utilisateur.username }}</td>
+                        <td>
+                            {% if requete.statut == 'non_traite' %}
+                                <span class="badge badge-danger">{{ requete.get_statut_display }}</span>
+                            {% elif requete.statut == 'en_cours' %}
+                                <span class="badge badge-warning">{{ requete.get_statut_display }}</span>
+                            {% elif requete.statut == 'traite' %}
+                                <span class="badge badge-success">{{ requete.get_statut_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if requete.priorite == 'urgente' %}
+                                <span class="badge badge-danger">{{ requete.get_priorite_display }}</span>
+                            {% elif requete.priorite == 'haute' %}
+                                <span class="badge badge-warning">{{ requete.get_priorite_display }}</span>
+                            {% else %}
+                                <span class="badge badge-info">{{ requete.get_priorite_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ requete.date_creation|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'admin_detail_requete' requete.pk %}" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Voir</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}">&laquo; Première</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}">Précédente</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}">Suivante</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}">Dernière &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state">
+        <h3>Aucune requête trouvée</h3>
+        <p>Aucune requête ne correspond à vos critères de recherche.</p>
+    </div>
+{% endif %}
+{% endblock %}

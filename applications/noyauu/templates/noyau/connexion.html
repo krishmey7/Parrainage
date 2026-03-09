@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<link rel="stylesheet" href="{% static 'css/connexion.css' %}">
+
+<h1>Connexion</h1>
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="email">Nom :</label>
+        <input type="name" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="mot_de_passe">Mot de passe :</label>
+        <input type="password" id="mot_de_passe" name="mot_de_passe" required>
+    </div>
+    <button type="submit">Se connecter</button>
+</form>
+
+<p>Pas encore de compte ? <a href="{% url 'inscription' %}">S'inscrire</a></p>
+
+
+<!-- ===== Modal d’erreur ===== -->
+<div id="errorModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-title">Erreur</div>
+        <div id="errorMessage"></div>
+        <button class="btn-close">OK</button>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .modal-backdrop.show { display: flex; }
+
+    .modal-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 400px;
+        width: calc(100% - 40px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        text-align: center;
+        animation: fadeIn .25s ease;
+    }
+    @keyframes fadeIn {
+        from {opacity:0; transform:translateY(15px);}
+        to   {opacity:1; transform:translateY(0);}
+    }
+    .modal-title {
+        font-size: 1.2rem;
+        color: #b00020;
+        margin-bottom: 10px;
+    }
+    .btn-close {
+        margin-top: 15px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #b00020;
+        color: white;
+        cursor: pointer;
+    }
+    .btn-close:hover { opacity: 0.9; }
+</style>
+
+{% if messages %}
+<script>
+    let messages = [
+        {% for message in messages %}
+            { level: "{{ message.tags }}", text: "{{ message|escapejs }}" },
+        {% endfor %}
+    ];
+    let errorMsg = messages.find(m => m.level.includes("error"));
+    if (errorMsg) {
+        window.onload = function() {
+            let modal = document.getElementById("errorModal");
+            let msgBox = document.getElementById("errorMessage");
+            msgBox.textContent = errorMsg.text;
+            modal.classList.add("show");
+
+            let closeBtns = modal.querySelectorAll(".btn-close");
+            closeBtns.forEach(btn => btn.onclick = () => modal.classList.remove("show"));
+
+            modal.onclick = (e) => { if(e.target === modal) modal.classList.remove("show"); };
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") modal.classList.remove("show");
+            });
+        };
+    }
+</script>
+{% endif %}
+{% endblock %}

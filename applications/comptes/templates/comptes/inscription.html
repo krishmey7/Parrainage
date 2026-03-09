@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<link rel="stylesheet" href="{% static 'css/connexion.css' %}">
+
+<div class="container">
+    <h1>Créer un compte</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="email">
+                <i class="fas fa-envelope"></i> Nom d'utilisateur
+            </label>
+            <input type="text" id="email" name="email" placeholder="Entrez votre nom" required autofocus>
+        </div>
+        <div>
+            <label for="telephone">
+                <i class="fas fa-phone"></i> Numéro de téléphone
+            </label>
+            <input type="tel" id="telephone" name="telephone" placeholder="+243 XXX XXX XXX" required>
+        </div>
+        <div>
+            <label for="mot_de_passe">
+                <i class="fas fa-lock"></i> Mot de passe
+            </label>
+            <input type="password" id="mot_de_passe" name="mot_de_passe" placeholder="Créez un mot de passe sécurisé" required>
+        </div>
+        <div>
+            <label for="code_parrain">
+                <i class="fas fa-gift"></i> Code de parrain (facultatif)
+            </label>
+            <input type="text" id="code_parrain" name="code_parrain" placeholder="Code de parrain" value="{{ request.GET.code_parrain }}" readonly>
+        </div>
+        <button type="submit">
+            <i class="fas fa-user-plus"></i> S'inscrire
+        </button>
+    </form>
+
+    <p>Déjà un compte ? <a href="{% url 'connexion' %}">Connectez-vous</a></p>
+</div>
+
+<!-- ===== Modal d’erreur ===== -->
+<div id="errorModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-title">Erreur</div>
+        <div id="errorMessage"></div>
+        <button class="btn-close">OK</button>
+    </div>
+</div>
+
+
+{% if messages %}
+
+{% endif %}
+{% endblock %}

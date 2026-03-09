@@ -1,0 +1,185 @@
+/* ============================================
+   NAVIGATION MOBILE - BARRE DE NAVIGATION
+   ============================================ */
+
+/* Barre de navigation mobile en bas */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: var(--spacing-sm) 0;
+    display: none; /* Cachée par défaut sur desktop */
+}
+
+.mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 100%;
+    padding: 0 var(--spacing-sm);
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: var(--transition-base);
+    flex: 1;
+    max-width: 80px;
+    position: relative;
+}
+
+.mobile-nav-item i {
+    font-size: 1.5rem;
+    transition: var(--transition-base);
+}
+
+.mobile-nav-item span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+    color: var(--primary);
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.mobile-nav-item.active i,
+.mobile-nav-item:hover i {
+    transform: scale(1.2);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mobile-nav-item.active::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: var(--border-radius-full);
+}
+
+/* Badge de notification sur les items */
+.mobile-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--danger);
+    color: var(--text-white);
+    border-radius: var(--border-radius-full);
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4);
+}
+
+/* Navigation desktop (cachée sur mobile) */
+.desktop-nav {
+    display: flex;
+}
+
+/* Ajuster le padding du main pour la nav mobile */
+@media screen and (max-width: 768px) {
+    /* Barre de navigation mobile - TOUJOURS VISIBLE */
+    .mobile-nav {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 1000 !important;
+    }
+    
+    .mobile-nav-items {
+        display: flex !important;
+        visibility: visible !important;
+    }
+    
+    /* Cacher la navigation desktop */
+    .desktop-nav {
+        display: none !important;
+    }
+    
+    /* Cacher le bouton menu hamburger */
+    .menu-toggle {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Ajuster le padding du main */
+    main {
+        padding-bottom: 90px !important;
+        margin-bottom: 0 !important;
+    }
+    
+    body {
+        padding-bottom: 0 !important;
+    }
+    
+    /* Cacher le menu desktop sur mobile */
+    .menu.desktop-nav {
+        display: none !important;
+    }
+    
+    /* Ajuster le header sur mobile */
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
+    
+    /* Forcer l'affichage de la nav mobile */
+    #mobileNav {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Animation d'apparition */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Appliquer l'animation uniquement sur mobile */
+@media (max-width: 768px) {
+    .mobile-nav {
+        animation: slideUp 0.3s ease-out;
+    }
+}

@@ -1,0 +1,664 @@
+{% extends 'base.html' %}
+
+{% block titre %}Tableau de bord - Genius Africa{% endblock %}
+
+{% block contenu %}
+<div class="dashboard-container">
+    <!-- En-tête de bienvenue -->
+    <div class="welcome-header animate-in">
+        <div class="welcome-text">
+            <h1>Bonjour, {{ user.first_name|default:user.email|truncatechars:10  }}!</h1>
+            <p>Voici le résumé de vos activités financières</p>
+        </div>
+      <div style='background: blue; color: white; padding: 3px;' class="current-date">
+
+      <a style='color: white; padding: 3px;' href="{% url 'download_app' %}">
+    <i class="fas fa-download"></i> Télécharger l’App
+</a>
+        </div>
+
+
+
+
+
+
+
+
+
+    </div>
+    <style> .withdraw-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .withdraw-btn:hover {
+            background-color: #c0392b;
+        }</style>
+
+    <!-- Carte de solde principal -->
+    <div class="main-balance-card card animate-in delay-1">
+        <div class="balance-content">
+            <div class="balance-info">
+                <h2 style='font-size: 20px;'> Solde capital</h2>
+                {% if  capital_actifs != 0 and total_trader_inactif != 0 %}
+                <div style='font-size: 20px;' class="amount">{{ totaux_gen }} CDF,  Trading: {{ capital_actifs }}
+
+                     <a href="{% url 'retirer_capital' %}"  class="joseph"> Retirer capital</a>
+                {% elif  capital_actifs == 0 %}
+                <div style='font-size: 20px;' class="amount">{{ total_trader_inactif }} CDF
+                    <a href="{% url 'retirer_capital' %}"  class="joseph"> Retirer capital</a>
+
+                {% elif  capital_actifs == 0 and total_trader_inactif == 0 %}
+                <div style='font-size: 20px;' class="amount">{{ totaux_gen }} CDF,
+
+                {% else %}
+                <div style='font-size: 20px;' class="amount">{{ capital_actifs }} CDF
+
+
+                    <a href="{% url 'resilier_contrat' %}" class="joseph">Résilier le contrat</a>
+
+
+
+
+                {% endif %}
+
+
+
+
+                </div>
+
+                   <h2 style='font-size: 20px;'> Solde principal</h2>
+                <!-- <div style='font-size: 20px;' class="amount">{{ solde }} CDF</div> -->
+                <div style='font-size: 20px;' class="amount">{{ solde_et_solde_capital }} CDF</div>
+
+
+
+                <div class="balance-growth">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+{{ gains_aujourdhui }} CDF aujourd'hui</span>
+                </div>
+
+                <div class="balance-growth">
+                   <i class="fas fa-money-bill-wave"></i>
+                    <span style='color: yellow; '>Retrait dispo: {{ solde }} </span>
+                </div>
+            </div>
+            <div class="balance-actions">
+
+<a href="{% url 'comment_faire_un_depot' %}" class="btn btn-lg">
+    <i class="fas fa-university"></i> Comment faire un dépôt
+</a>
+
+
+                 <a href="{% url 'create_order' %}" class="btn btn-lg">
+                    <i class="fas fa-plus-circle"></i> Dépôt
+                </a>
+
+                <a href="{% url 'liste_retraits' %}" class="btn btn-outline btn-lg">
+                    <i class="fas fa-money-bill-wave"></i> Retrait
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes de résumé -->
+    <div class="summary-cards grid grid-3 animate-in delay-2">
+        <div class="summary-card card">
+            <div class="card-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="card-content">
+                <h3>Gains aujourd'hui</h3>
+                <div class="value">{{ gains_aujourdhui }} CDF</div>
+            </div>
+        </div>
+
+        <div class="summary-card card">
+            <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="card-content">
+                <h3>Total dépôts</h3>
+                <div class="value">{{ total_depots }} CDF</div>
+            </div>
+        </div>
+
+        <div class="summary-card card">
+            <div class="card-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="card-content">
+                <h3>Filleuls actifs</h3>
+                <div class="value">{{ user.profil.filleuls.count }}</div>
+                <a href="{% url 'liste_filleuls' %}" class="card-link">Voir tous</a>
+            </div>
+        </div>
+    </div>
+
+
+
+        <!-- Historique des transactions -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Dernières transactions</h3>
+
+            </div>
+            <div class="transactions-list">
+                {% for transaction in transactions %}
+                <div class="transaction-item {% if forloop.counter > 5 %}hidden-transaction{% endif %}">
+                    <div class="transaction-icon">
+                        {% if transaction.type == 'depot' %}
+                        <i class="fas fa-arrow-down" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
+
+                        {% elif transaction.type == 'bonus_inscription' %}
+                        <i class="fas fa-gift" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
+
+                        {% elif transaction.type == 'retrait' %}
+                        <i class="fas fa-arrow-up" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"></i>
+                        {% else %}
+                        <i class="fas fa-gift" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-type">{{ transaction.get_type_display }}</div>
+                        <div class="transaction-date">{{ transaction.cree_le|date:"d/m/Y H:i" }}</div>
+                    </div>
+                    <div class="transaction-amount {% if transaction.type == 'depot' or transaction.type == 'gain' or transaction.type == 'bonus_inscription' %}positive{% else %}negative{% endif %}">
+                        {% if transaction.type == 'depot' or transaction.type == 'gain' or transaction.type == 'bonus_inscription' %}+{% else %}-{% endif %}{{ transaction.montant }} FC
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>Aucune transaction récente</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if transactions|length > 5 %}
+            <div class="view-more-container">
+                <button class="view-more-btn" onclick="toggleViewMore()">
+                    <span class="more-text">Voir plus</span>
+                    <span class="less-text" style="display: none">Voir moins</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="quick-actions animate-in delay-4">
+        <h3>Actions rapides</h3>
+        <div class="actions-grid">
+            <a href="{% url 'liste_produits' %}" class="action-card">
+                <div class="action-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="action-title">Signer avec un</div>
+                <div class="action-desc">Trader</div>
+            </a>
+
+            <a href="{% url 'mon_code_parrainage' %}" class="action-card">
+                <div class="action-icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="action-title">Parrainer</div>
+                <div class="action-desc">Amis et contacts</div>
+            </a>
+
+            <a href="{% url 'liste_bonus_parrainage' %}" class="action-card">
+                <div class="action-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="action-title">Bonus</div>
+                <div class="action-desc">Vos récompenses</div>
+            </a>
+
+               <a href="{% url 'mes_investissements' %}" class="action-card">
+                <div class="action-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="action-title">Investissements</div>
+                <div class="action-desc">Mes Investissements</div>
+            </a>
+
+
+
+
+            <a href="{% url 'liste_depots' %}" class="action-card">
+                <div class="action-icon" style="background: rgba(22, 163, 74, 0.1); color: #16a34a;">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="action-title">Historique</div>
+                <div class="action-desc">Dépôts et retraits</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles spécifiques au tableau de bord */
+    .dashboard-container {
+        padding: 0 0.5rem;
+    }
+
+    .welcome-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .welcome-text h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .joseph {
+    padding: 8px 20px;
+    border-radius: 10px;
+    background-color:  #341db8ff; /* bleu élégant */
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 15px;
+    display: inline-block;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.joseph:hover {
+    background-color: blue;
+    transform: translateY(-2px);
+}
+
+
+    .welcome-text p {
+        color: var(--text-light);
+        font-size: 1.125rem;
+    }
+
+    .current-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        font-weight: 500;
+    }
+
+    .main-balance-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .balance-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .balance-info h2 {
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+
+    .amount {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .balance-growth {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .balance-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .summary-cards {
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+
+    .summary-card .card-icon {
+        flex-shrink: 0;
+        width: 54px;
+        height: 54px;
+    }
+
+    .card-content h3 {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .card-content .value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+    }
+
+    .card-link {
+        font-size: 0.8rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        margin-top: 0.25rem;
+        display: inline-block;
+    }
+
+    .chart-history-section {
+        margin-bottom: 2rem;
+        gap: 1.5rem;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .time-filter select {
+        padding: 0.4rem 0.75rem;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--mid-gray);
+        font-size: 0.8rem;
+    }
+
+    .chart-container {
+        height: 250px;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .placeholder-chart {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 80%;
+        padding: 0 0.5rem;
+    }
+
+    .bar {
+        width: 30px;
+        background: var(--primary-color);
+        border-radius: 4px 4px 0 0;
+        transition: height 0.3s ease;
+    }
+
+    .bar:nth-child(2n) {
+        background: var(--primary-dark);
+    }
+
+    .chart-labels {
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+
+    .transactions-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .transaction-item {
+        display: flex;
+        align-items: center;
+        padding: 0.875rem 0;
+        border-bottom: 1px solid var(--mid-gray);
+    }
+
+    .transaction-item:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-icon {
+        margin-right: 0.75rem;
+    }
+
+    .transaction-icon i {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .transaction-details {
+        flex: 1;
+    }
+
+    .transaction-type {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .transaction-date {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+
+    .transaction-amount {
+        font-weight: 600;
+    }
+
+    .transaction-amount.positive {
+        color: var(--success-color);
+    }
+
+    .transaction-amount.negative {
+        color: var(--danger-color);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+    }
+
+    .empty-state i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+
+    .hidden-transaction {
+        display: none;
+    }
+
+    .view-more-container {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .view-more-btn {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-actions {
+        margin-bottom: 2rem;
+    }
+
+    .quick-actions h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--secondary-color);
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-dark);
+        transition: var(--transition);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--mid-gray);
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        color: var(--text-dark);
+    }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+    }
+
+    .action-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .action-desc {
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .welcome-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+
+        .balance-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .balance-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .balance-actions .btn {
+            width: 100%;
+        }
+
+        .chart-history-section {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .amount {
+            font-size: 2rem;
+        }
+
+        .summary-card {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    function toggleViewMore() {
+        const hiddenItems = document.querySelectorAll('.hidden-transaction');
+        const moreText = document.querySelector('.more-text');
+        const lessText = document.querySelector('.less-text');
+        const chevron = document.querySelector('.view-more-btn i');
+
+        hiddenItems.forEach(item => {
+            if (item.style.display === 'flex') {
+                item.style.display = 'none';
+                moreText.style.display = 'inline';
+                lessText.style.display = 'none';
+                chevron.className = 'fas fa-chevron-down';
+            } else {
+                item.style.display = 'flex';
+                moreText.style.display = 'none';
+                lessText.style.display = 'inline';
+                chevron.className = 'fas fa-chevron-up';
+            }
+        });
+    }
+
+    // Animation des barres du graphique
+    document.addEventListener('DOMContentLoaded', function() {
+        const bars = document.querySelectorAll('.bar');
+        bars.forEach(bar => {
+            const height = bar.style.height;
+            bar.style.height = '0';
+            setTimeout(() => {
+                bar.style.height = height;
+            }, 300);
+        });
+    });
+</script>
+{% endblock %}

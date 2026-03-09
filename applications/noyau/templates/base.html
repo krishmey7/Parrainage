@@ -1,0 +1,811 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}Plateforme Genius Africa{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% url 'favicon' %}" type="image/png">
+    <link rel="shortcut icon" href="{% url 'favicon' %}" type="image/png">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% url 'manifest_json' %}">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Genius Africa">
+    <link rel="apple-touch-icon" href="{% static 'image/Genius_Africa.png' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Feuilles de style -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    <link rel="stylesheet" href="{% static 'css/connexion.css' %}">
+    
+    <style>
+        /* Cacher le bouton menu hamburger sur mobile */
+        @media screen and (max-width: 768px) {
+            .menu-toggle {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+        }
+        
+        /* Styles pour les dropdowns modernes */
+        .theme-selector-header {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @media (max-width: 768px) {
+            .theme-selector-header {
+                position: static;
+                transform: none;
+                margin-left: auto;
+            }
+        }
+        
+        .theme-toggle-btn:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+        }
+        
+        .theme-dropdown {
+            width: 220px !important;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .icon-container {
+            position: relative;
+        }
+        
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--border-radius-full);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-base);
+            font-size: 1.1rem;
+        }
+        
+        .icon-btn:hover {
+            background: var(--primary-gradient);
+            color: var(--text-white);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: var(--text-white);
+            border-radius: var(--border-radius-full);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-content {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--glass-border);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition-base);
+            z-index: var(--z-dropdown);
+        }
+        
+        .dropdown.active .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dropdown-title {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-base);
+        }
+        
+        .mark-all-read:hover {
+            color: var(--primary-dark);
+        }
+        
+        .dropdown-body {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .message-list {
+            list-style: none;
+            padding: var(--spacing-sm);
+        }
+        
+        .message-item {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xs);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+        
+        .message-item:hover {
+            background: var(--bg-primary);
+            transform: translateX(4px);
+        }
+        
+        .message-item.unread {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .message-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .message-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+        
+        .dropdown-footer {
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        
+        .view-all {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .user-avatar-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .user-menu-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-menu-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .user-menu-link:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .user-menu-link i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .theme-option {
+            transition: var(--transition) !important;
+        }
+        
+        .theme-option.active {
+            background: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+        }
+        
+        .theme-option:hover:not(.active) {
+            background: var(--bg-hover) !important;
+            border-color: var(--primary) !important;
+        }
+        
+        .theme-option i {
+            font-size: 0.875rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-full);
+            background: var(--primary-gradient);
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-full);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: var(--transition-base);
+            z-index: -1;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-link:hover::before {
+            left: 0;
+        }
+        
+        .nav-link-important {
+            background: var(--secondary-gradient);
+            color: var(--text-white);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .nav-link-important:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        @media (max-width: 768px) {
+            .dropdown-content {
+                width: calc(100vw - 40px);
+                right: -20px;
+            }
+            
+            header {
+                position: relative;
+            }
+            
+            nav {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+            
+            .logo {
+                font-size: 1.25rem;
+            }
+            
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+
+
+</head>
+<body{% if not user.is_authenticated and 'connexion' in request.path or 'inscription' in request.path %} class="auth-page"{% endif %}>
+    <header{% if not user.is_authenticated and 'connexion' in request.path or 'inscription' in request.path %} style="display: none;"{% endif %}>
+        <nav>
+            <div class="logo">
+                <a href="{% if user.is_authenticated %}{% url 'tableau_de_bord' %}{% else %}{% url 'accueil' %}{% endif %}" style="display: flex; align-items: center; gap: var(--spacing-xs); text-decoration: none;">
+                   <img class="img" src="{% static 'image/Genius_Africa.png' %}" alt="Genius Africa Logo" style="border-radius: var(--border-radius-sm); object-fit: cover; width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
+                    <span class="logo-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">Genius Africa</span>
+                </a>
+            </div>
+
+            <!-- Sélecteur de thème - Visible uniquement pour les utilisateurs non connectés -->
+            {% if not user.is_authenticated %}
+            <div class="theme-selector-header">
+                <div class="dropdown" id="theme-dropdown">
+                    <div class="icon-container">
+                        <button class="icon-btn theme-toggle-btn" onclick="toggleDropdown('theme')" title="Changer le thème" style="width: 40px; height: 40px; border-radius: var(--border-radius-full); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                    </div>
+                    <div class="dropdown-content theme-dropdown" style="width: 220px; right: 0;">
+                        <div class="dropdown-header">
+                            <span class="dropdown-title">Thème</span>
+                        </div>
+                        <div class="dropdown-body">
+                            <div class="theme-selector" style="padding: var(--spacing-sm);">
+                                <div style="display: flex; gap: var(--spacing-xs);">
+                                    <button class="theme-option" data-theme="dark" title="Sombre" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                        <i class="fas fa-moon"></i>
+                                        <span style="font-size: 0.75rem;">Sombre</span>
+                                    </button>
+                                    <button class="theme-option" data-theme="light" title="Clair" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                        <i class="fas fa-sun"></i>
+                                        <span style="font-size: 0.75rem;">Clair</span>
+                                    </button>
+                                    <button class="theme-option" data-theme="system" title="Système" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                        <i class="fas fa-desktop"></i>
+                                        <span style="font-size: 0.75rem;">Auto</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+            <div class="header-right">
+                <!-- Icônes de notification et annonce -->
+                <div class="header-icons">
+                    <!-- Icône annonce -->
+                    <div class="dropdown" id="annonce-dropdown">
+                        <div class="icon-container">
+                            <button class="icon-btn" onclick="toggleDropdown('annonce')">
+                                <i class="fas fa-bullhorn"></i>
+                            </button>
+                            <span class="notification-badge" id="annonce-badge" style="display: none;">0</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-header">
+                                <span class="dropdown-title">Annonces Publiques</span>
+                                <button class="mark-all-read" onclick="markAllAsRead('public')">Tout marquer comme lu</button>
+                            </div>
+                            <div class="dropdown-body">
+                                <ul class="message-list" id="annonce-list">
+                                    {% if public_announcements %}
+                                        {% for announcement in public_announcements %}
+                                        <li class="message-item unread"
+                                            data-id="public_{{ announcement.id }}"
+                                            onclick="markAsRead(this, 'public', '{{ announcement.id }}')">
+                                            <div class="message-content">
+                                                <div class="message-title">{{ announcement.title }}</div>
+                                                <div class="message-text">{{ announcement.content|truncatewords:15 }}</div>
+                                                <div class="message-time">{{ announcement.created_at|timesince }}</div>
+                                            </div>
+                                            <div class="message-actions">
+                                                <button class="message-action" onclick="event.stopPropagation(); markAsRead(this.parentElement.parentElement, 'public', '{{ announcement.id }}')">
+                                                    Marquer comme lu
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="empty-message">
+                                            <i class="fas fa-bullhorn" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p>Aucune annonce publique pour le moment</p>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="{% url 'public_announcements' %}" class="view-all">Voir toutes les annonces</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Icône notification -->
+                    <div class="dropdown" id="notification-dropdown">
+                        <div class="icon-container">
+                            <button class="icon-btn" onclick="toggleDropdown('notification')">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-header">
+                                <span class="dropdown-title">Vos Notifications</span>
+                                <button class="mark-all-read" onclick="markAllAsRead('personal')">Tout marquer comme lu</button>
+                            </div>
+                            <div class="dropdown-body">
+                                <ul class="message-list" id="notification-list">
+                                    {% if personal_announcements %}
+                                        {% for announcement in personal_announcements %}
+                                        <li class="message-item unread"
+                                            data-id="personal_{{ announcement.id }}"
+                                            onclick="markAsRead(this, 'personal', '{{ announcement.id }}')">
+                                            <div class="message-content">
+                                                <div class="message-title">{{ announcement.title }}</div>
+                                                <div class="message-text">{{ announcement.content|truncatewords:15 }}</div>
+                                                <div class="message-time">{{ announcement.created_at|timesince }}</div>
+                                            </div>
+                                            <div class="message-actions">
+                                                <button class="message-action" onclick="event.stopPropagation(); markAsRead(this.parentElement.parentElement, 'personal', '{{ announcement.id }}')">
+                                                    Marquer comme lu
+                                                </button>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li class="empty-message">
+                                            <i class="fas fa-bell" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p>Aucune notification personnelle</p>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="{% url 'personal_announcements' %}" class="view-all">Voir toutes les notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info">
+                    <div class="dropdown" id="user-dropdown">
+                        <div class="icon-container">
+                            <button class="icon-btn user-avatar-btn" onclick="toggleDropdown('user')" style="width: 44px; height: 44px; border-radius: var(--border-radius-full); background: var(--primary); color: white; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                                {{ user.email|first|upper }}
+                            </button>
+                        </div>
+                        <div class="dropdown-content" style="width: 200px; right: 0;">
+                            <div class="dropdown-body">
+                                <div class="user-menu-item" style="padding: var(--spacing-md); border-bottom: 1px solid var(--border-color);">
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">{{ user.first_name|default:user.email|truncatechars:20 }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ user.email|truncatechars:25 }}</div>
+                                </div>
+                                <a href="{% url 'tableau_de_bord' %}" class="user-menu-link" style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-primary); text-decoration: none; transition: var(--transition);">
+                                    <i class="fas fa-th-large"></i>
+                                    <span>Tableau de bord</span>
+                                </a>
+                                <div class="theme-selector" style="padding: var(--spacing-md); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: var(--spacing-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Thème</div>
+                                    <div style="display: flex; gap: var(--spacing-xs);">
+                                        <button class="theme-option" data-theme="dark" title="Sombre" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                            <i class="fas fa-moon"></i>
+                                            <span style="font-size: 0.75rem;">Sombre</span>
+                                        </button>
+                                        <button class="theme-option" data-theme="light" title="Clair" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                            <i class="fas fa-sun"></i>
+                                            <span style="font-size: 0.75rem;">Clair</span>
+                                        </button>
+                                        <button class="theme-option" data-theme="system" title="Système" style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); color: var(--text-primary); border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);">
+                                            <i class="fas fa-desktop"></i>
+                                            <span style="font-size: 0.75rem;">Auto</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <a href="{% url 'deconnexion' %}" class="user-menu-link" style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--danger); text-decoration: none; transition: var(--transition);">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Déconnexion</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+            <!-- Navigation Desktop -->
+            <div class="menu desktop-nav" id="menu">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'tableau_de_bord' %}" class="nav-link">
+                        <i class="fas fa-th-large"></i>
+                        <span class="text">Tableau de bord</span>
+                    </a>
+                    <a href="{% url 'create_order' %}" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        <span class="text">Dépôt</span>
+                    </a>
+                    <a href="{% url 'liste_produits' %}" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="text">Trader</span>
+                    </a>
+                    <a href="{% url 'liste_retraits' %}" class="nav-link nav-link-important">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="text">Retrait</span>
+                    </a>
+                    <a href="{% url 'mon_code_parrainage' %}" class="nav-link">
+                        <i class="fas fa-gift"></i>
+                        <span class="text">Parrainage</span>
+                    </a>
+                    <a href="{% url 'deconnexion' %}" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="text">Déconnexion</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'connexion' %}" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="text">Connexion</span>
+                    </a>
+                    <a href="{% url 'inscription' %}" class="nav-link nav-link-important">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="text">Inscription</span>
+                    </a>
+                {% endif %}
+            </div>
+
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            {% block contenu %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Navigation Mobile - Barre de navigation en bas -->
+    {% if user.is_authenticated %}
+    <nav id="mobileNav" class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="{% url 'tableau_de_bord' %}" class="mobile-nav-item" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="{% url 'create_order' %}" class="mobile-nav-item" data-page="depot">
+                <i class="fas fa-plus-circle"></i>
+                <span>Dépôt</span>
+            </a>
+            <a href="{% url 'liste_produits' %}" class="mobile-nav-item" data-page="trader">
+                <i class="fas fa-chart-line"></i>
+                <span>Trader</span>
+            </a>
+            <a href="{% url 'liste_retraits' %}" class="mobile-nav-item" data-page="retrait">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Retrait</span>
+            </a>
+            <a href="{% url 'mon_code_parrainage' %}" class="mobile-nav-item" data-page="parrainage">
+                <i class="fas fa-gift"></i>
+                <span>Parrainage</span>
+            </a>
+            <a href="{% url 'deconnexion' %}" class="mobile-nav-item" data-page="logout" style="color: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
+
+
+
+    {% block scripts %}{% endblock %}
+    
+    <script>
+        // Toggle menu mobile
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+        
+        // Toggle dropdowns
+        function toggleDropdown(type) {
+            const dropdown = document.getElementById(type + '-dropdown');
+            const allDropdowns = document.querySelectorAll('.dropdown');
+            
+            // Fermer tous les autres dropdowns
+            allDropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
+            });
+            
+            // Toggle le dropdown actuel
+            dropdown.classList.toggle('active');
+        }
+        
+        // Fermer les dropdowns en cliquant à l'extérieur
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+        
+        // Fonction pour marquer comme lu (à adapter selon votre logique)
+        function markAsRead(element, type, id) {
+            // Votre logique ici
+            element.classList.remove('unread');
+        }
+        
+        function markAllAsRead(type) {
+            // Votre logique ici
+            document.querySelectorAll(`#${type === 'public' ? 'annonce' : 'notification'}-list .message-item`).forEach(item => {
+                item.classList.remove('unread');
+            });
+        }
+        
+        // Initialiser la navigation mobile
+        function initMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            if (!mobileNav) return;
+            
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.mobile-nav-item');
+            
+            // Activer l'item actif
+            navItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (currentPath === href || currentPath.startsWith(href + '/')) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Afficher/cacher selon la largeur
+            function toggleMobileNav() {
+                const width = window.innerWidth || document.documentElement.clientWidth;
+                const main = document.querySelector('main');
+                
+                if (width <= 768) {
+                    mobileNav.style.display = 'block';
+                    if (main) main.style.paddingBottom = '75px';
+                } else {
+                    mobileNav.style.display = 'none';
+                    if (main) main.style.paddingBottom = '0';
+                }
+            }
+            
+            toggleMobileNav();
+            window.addEventListener('resize', toggleMobileNav);
+        }
+        
+        // Initialiser au chargement
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileNav);
+        } else {
+            initMobileNav();
+        }
+    </script>
+    
+    <!-- Gestionnaire de thèmes -->
+    <script src="{% static 'js/theme.js' %}"></script>
+    
+    <!-- PWA Manager -->
+    <script src="{% static 'js/pwa.js' %}"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ personnel.utilisateur.email }}{% endblock %}
+
+{% block contenu %}
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postuler à un Objectif</title>
+
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="card">
+            <h1>🎯 Objectifs Disponibles</h1>
+            <p class="subtitle">Postulez aux objectifs et maximisez vos primes</p>
+
+            <!-- Statistiques rapides -->
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ objectifs|length }}</div>
+                    <div class="stat-label">Objectifs</div>
+                </div>
+
+
+                <div class="stat-item">
+                    <div class="stat-number">{{ objectifs_postules|length }}</div>
+                    <div class="stat-label">Déjà postulés</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles de tri et filtrage -->
+        <div class="controls">
+            <div class="filter-group">
+                <button class="filter-btn active">Tous</button>
+
+            </div>
+
+            <select class="sort-select">
+                <option>Par défaut</option>
+
+            </select>
+        </div>
+
+        {% if objectifs %}
+            <!-- Grille des objectifs COMPACTE -->
+            <div class="objectif-grid">
+                {% for objectif in objectifs %}
+                <div class="objectif-card">
+                    <!-- En-tête avec classement -->
+                    <div class="card-header-compact">
+                        <h3>{{ objectif.intitule }}</h3>
+                        <!-- Badge de classement basé sur la prime -->
+                        {% if objectif.prime_objectif >= 100000 %}
+                        <div class="ranking-badge ranking-premium">🏆 Premium</div>
+                        {% elif objectif.prime_objectif >= 50000 %}
+                        <div class="ranking-badge ranking-excellent">⭐ Excellent</div>
+                        {% elif objectif.prime_objectif >= 25000 %}
+                        <div class="ranking-badge ranking-good">🔥 Populaire</div>
+                        {% else %}
+                        <div class="ranking-badge ranking-normal">📈 Standard</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Indicateur de statut -->
+                    <div class="statut-compact">
+                        <span class="statut-dot {% if objectif.est_en_cours %}statut-en-cours{% else %}statut-termine{% endif %}"></span>
+                        <span style="font-size: 0.8rem; color: {% if objectif.est_en_cours %}var(--success-color){% else %}var(--gray-color){% endif %}; font-weight: 500;">
+                            {% if objectif.est_en_cours %}🟢 Actif{% else %}⚫ Terminé{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Badges spéciaux -->
+                    <div>
+                        {% if objectif.prime_objectif >= 75000 %}
+                        <span class="special-badge badge-hot">🔥 Hot</span>
+                        {% endif %}
+                        {% if objectif.is_new %}
+                        <span class="special-badge badge-new">🆕 Nouveau</span>
+                        {% endif %}
+                        {% if objectif.jours_restants <= 7 %}
+                        <span class="special-badge badge-urgent">⚡ Urgent</span>
+                        {% endif %}
+                        {% if objectif.nombre_filleuls_requis <= 10 %}
+                        <span class="special-badge badge-easy">🎯 Facile</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Grille de détails compacte -->
+                    <div class="details-grid">
+                        <div class="detail-item-compact">
+                            <span class="detail-label">📅 Période</span>
+                            <span class="detail-value" style="font-size: 0.8rem;">{{ objectif.date_debut|date:"d/m" }} - {{ objectif.date_fin|date:"d/m" }}</span>
+                        </div>
+                        <div class="detail-item-compact">
+                            <span class="detail-label">👥 Requis</span>
+                            <span class="detail-value">{{ objectif.nombre_filleuls_requis }}</span>
+                        </div>
+                        <div class="detail-item-compact">
+                            <span class="detail-label">🔄 Type</span>
+                            <span class="detail-value" style="font-size: 0.8rem;">{{ objectif.get_periodicite_display }}</span>
+                        </div>
+                        <div class="detail-item-compact">
+                            <span class="detail-label">💰 Prime</span>
+                            <span class="detail-value prime-highlight">{{ objectif.prime_objectif }} FC</span>
+                        </div>
+                    </div>
+
+                    <!-- Indicateur d'achat requis -->
+                    {% if objectif.filleuls_doivent_acheter %}
+                    <div class="achat-indicator">
+                        <span>💰</span>
+                        <span>Achat requis:
+
+                     {% if objectif.produits_eligibles.exists %}
+                        <ul>
+                        {% for produit in objectif.produits_eligibles.all %}
+                            <li>{{ produit.nom }}-- <strong style="color: red;">{{ produit.prix }}</strong></li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <small>Tous les produits sont éligibles</small>
+                    {% endif %}
+
+
+
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Barre de progression (si applicable) -->
+                    {% if objectif.progression %}
+                    <div class="progress-compact">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ objectif.progression }}%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Progression</span>
+                            <span>{{ objectif.progression }}%</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="btn-group-compact">
+                        <!-- Bouton Détails -->
+                        <button type="button" class="btn btn-outline btn-details"
+                                data-objectif-id="{{ objectif.id }}"
+                                data-objectif-titre="{{ objectif.intitule }}"
+                                data-objectif-periode="{{ objectif.date_debut }} au {{ objectif.date_fin }}"
+                                data-objectif-periodicite="{{ objectif.get_periodicite_display }}"
+                                data-objectif-filleuls="{{ objectif.nombre_filleuls_requis }}"
+                                data-objectif-prime="{{ objectif.prime_objectif }} FC"
+                                data-objectif-achat="{{ objectif.filleuls_doivent_acheter }}">
+                            📋 Détails
+                        </button>
+
+                        <!-- Bouton Postuler/Déjà postulé -->
+                        {% if objectif.id in objectifs_postules %}
+                            <button class="btn" disabled>
+                                ✅ Postulé
+                            </button>
+                        {% elif not objectif.est_en_cours %}
+                            <button class="btn" disabled>
+                                ❌ Terminé
+                            </button>
+                        {% else %}
+                            <form method="post" style="display: contents;">
+                                {% csrf_token %}
+                                <input type="hidden" name="objectif_id" value="{{ objectif.id }}">
+                                <button type="submit" class="btn btn-primary">
+                                    🎯 Postuler
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- État vide -->
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <h3>Aucun objectif disponible</h3>
+                    <p>Revenez plus tard pour découvrir de nouvelles opportunités.</p>
+                    <a href="{% url 'personnel:tableau_de_bord' %}" class="btn btn-primary">
+                        ← Retour au tableau de bord
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal pour les détails -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitre">Détails de l'objectif</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalDescription">Chargement des détails...</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="closeModalBtn">Fermer</button>
+                <button class="btn btn-primary" id="postulerModalBtn" style="display: none;">
+                    🎯 Postuler maintenant
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

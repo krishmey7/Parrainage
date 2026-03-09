@@ -1,0 +1,999 @@
+{% extends 'base.html' %}
+
+{% block titre %}Tableau de bord - Genius Africa{% endblock %}
+
+{% block contenu %}
+<div class="dashboard-modern">
+    <!-- HERO : guide l’œil (titre -> infos clés) -->
+    <div class="dashboard-hero">
+        <div class="hero-main">
+            <div class="hero-left">
+                <p class="hero-kicker">Tableau de bord</p>
+                <h1>Bonjour, {{ user.first_name|default:user.email|truncatechars:15 }}!</h1>
+                <p class="hero-subtitle">Vue d’ensemble de vos soldes et actions importantes.</p>
+        </div>
+            <div class="hero-meta">
+                <div class="hero-meta-item">
+                    <span class="meta-label">Aujourd'hui</span>
+                    <span class="meta-value">{% now "d M Y" %}</span>
+                </div>
+                <div class="hero-meta-item">
+                    <span class="meta-label">Gains du jour</span>
+                    <span class="meta-value positive">+{{ gains_aujourdhui }} CDF</span>
+                </div>
+                <div class="hero-meta-item">
+                    <span class="meta-label">Filleuls actifs</span>
+                    <span class="meta-value">{{ user.profil.filleuls.count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="dashboard-main-layout">
+        <!-- Colonne gauche : soldes + actions -->
+        <section class="dashboard-main-left">
+            <div class="balances-row">
+                <div class="card-modern balance-card balance-main">
+                    <div class="card-header-compact">
+                        <span class="card-label">Solde principal</span>
+                    </div>
+                    <div class="card-value-large">{{ solde_et_solde_capital }} CDF</div>
+                    <div class="card-footer-compact">
+                        <span class="badge-success">+{{ gains_aujourdhui }} CDF aujourd'hui</span>
+                        <a href="{% url 'liste_transactions' %}" class="link-text">Voir transactions</a>
+                    </div>
+        </div>
+
+                <div class="card-modern balance-card balance-secondary">
+                    <div class="card-header-compact">
+                        <span class="card-label">Retrait disponible</span>
+                    </div>
+                    <div class="card-value">{{ solde }} CDF</div>
+                    <div class="card-footer-compact">
+                        <a href="{% url 'liste_retraits' %}" class="btn-compact btn-primary">Faire un retrait</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="capital-row">
+                <div class="card-modern balance-card balance-capital">
+                    <div class="card-header-compact">
+                        <span class="card-label">Solde capital</span>
+                    </div>
+                    <div class="card-value">
+                        {% if capital_actifs != 0 and total_trader_inactif != 0 %}
+                            {{ totaux_gen }} CDF
+                        {% elif capital_actifs == 0 %}
+                            {{ total_trader_inactif }} CDF
+                        {% elif capital_actifs == 0 and total_trader_inactif == 0 %}
+                            {{ totaux_gen }} CDF
+                        {% else %}
+                            {{ capital_actifs }} CDF
+                        {% endif %}
+                    </div>
+
+                    <div class="capital-details">
+                        <div class="capital-pill">
+                            <span>Total dépôts</span>
+                            <strong>{{ total_depots }} CDF</strong>
+                        </div>
+                        <div class="capital-pill">
+                            <span>Filleuls actifs</span>
+                            <strong>{{ user.profil.filleuls.count }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-compact capital-actions">
+                        {% if capital_actifs != 0 %}
+                            <a href="{% url 'resilier_contrat' %}" class="btn-compact btn-secondary">Résilier le contrat</a>
+                        {% else %}
+                            <a href="{% url 'retirer_capital' %}" class="btn-compact btn-secondary">Retirer le capital</a>
+                        {% endif %}
+                        <a href="{% url 'mes_investissements' %}" class="link-text">Voir mes investissements</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions-section">
+                <div class="section-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
+                        <div>
+                            <h2>Actions rapides</h2>
+                            <p style="font-size: 0.7rem; margin: 0;">Commencez par un dépôt, puis explorez le trading et le parrainage.</p>
+                        </div>
+                        <button class="toggle-actions-btn" onclick="toggleQuickActions()" aria-label="Afficher/Masquer les actions rapides">
+                            <i class="fas fa-chevron-down toggle-icon" id="toggle-actions-icon"></i>
+                        </button>
+                    </div>
+    </div>
+
+                <div class="quick-actions-wrapper" id="quick-actions-wrapper">
+                    <div class="quick-actions-grid" id="quick-actions-grid">
+                    <a href="{% url 'create_order' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Nouveau dépôt</span>
+                            <span class="quick-action-subtitle">Alimentez votre compte</span>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'comment_faire_un_depot' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Aide dépôt</span>
+                            <span class="quick-action-subtitle">Guide étape par étape</span>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'liste_produits' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Trader</span>
+                            <span class="quick-action-subtitle">Choisir un produit</span>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'mon_code_parrainage' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(14, 165, 233, 0.12); color: #0ea5e9;">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Parrainage</span>
+                            <span class="quick-action-subtitle">Partager votre code</span>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'liste_bonus_parrainage' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(234, 179, 8, 0.12); color: #eab308;">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Bonus</span>
+                            <span class="quick-action-subtitle">Vos gains</span>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'liste_filleuls' %}" class="quick-action-card">
+                        <div class="quick-action-icon" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <span class="quick-action-title">Mes filleuls</span>
+                            <span class="quick-action-subtitle">Voir votre réseau</span>
+                        </div>
+                    </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colonne droite : historique en timeline -->
+        <aside class="dashboard-main-right">
+            <div class="card-modern transactions-card">
+                <div class="card-header-compact">
+                    <span class="card-label">Dernières transactions</span>
+                    <a href="{% url 'liste_transactions' %}" class="link-text">Voir tout</a>
+                </div>
+                <div class="transactions-list-compact">
+                    {% for transaction in transactions|slice:":8" %}
+                    <div class="transaction-row">
+                        <div class="transaction-timeline-dot"></div>
+                        <div class="transaction-main">
+                            <div class="transaction-top">
+                                <span class="transaction-type-compact">{{ transaction.get_type_display }}</span>
+                                <span class="transaction-amount-compact {% if transaction.type == 'depot' or transaction.type == 'gain' or transaction.type == 'bonus_inscription' %}positive{% else %}negative{% endif %}">
+                                    {% if transaction.type == 'depot' or transaction.type == 'gain' or transaction.type == 'bonus_inscription' %}+{% else %}-{% endif %}{{ transaction.montant }} FC
+                                </span>
+                            </div>
+                            <div class="transaction-bottom">
+                                <span class="transaction-date-compact">{{ transaction.cree_le|date:"d/m/Y H:i" }}</span>
+                                <span class="transaction-tag">
+                                    {% if transaction.type == 'depot' %}
+                                        Dépôt
+                                    {% elif transaction.type == 'retrait' %}
+                                        Retrait
+                                    {% elif transaction.type == 'bonus_inscription' %}
+                                        Bonus
+                                    {% else %}
+                                        Mouvement
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state-compact">
+                        <i class="fas fa-receipt"></i>
+                        <p>Aucune transaction pour le moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+/* Dashboard moderne 2026 - Guidage visuel clair */
+.dashboard-modern {
+    padding: 0.1rem var(--spacing-md) 0.15rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: calc(100vh - 100px);
+}
+
+.dashboard-modern::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+/* HERO */
+.dashboard-hero { margin-bottom: 0.5rem; margin-top: 0; }
+.hero-main { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md); }
+.hero-kicker { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.2rem; }
+.hero-left h1 { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem; line-height: 1.2; }
+.hero-subtitle { color: var(--text-secondary); font-size: 0.75rem; margin: 0; }
+.hero-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+.hero-meta-item { min-width: 100px; padding: 0.4rem 0.6rem; border-radius: var(--border-radius); border: 1px solid var(--border-color); background: var(--bg-card); display: flex; flex-direction: column; gap: 0.1rem; }
+.meta-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.meta-value { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); }
+.meta-value.positive { color: #10b981; }
+
+/* Layout principal */
+.dashboard-main-layout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.1fr); gap: 0.6rem; align-items: start; }
+.dashboard-main-left { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Soldes */
+.balances-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.balance-main { flex: 2; }
+.balance-secondary { flex: 1.2; }
+.card-value-large { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+.card-footer-compact { display: flex; align-items: center; gap: 0.4rem; margin-top: auto; justify-content: space-between; flex-wrap: wrap; }
+
+/* Capital details */
+.capital-details { display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.capital-pill { padding: 0.3rem 0.6rem; border-radius: var(--border-radius-full); background: var(--bg-secondary); border: 1px solid var(--border-color); display: inline-flex; flex-direction: column; gap: 0.1rem; }
+.capital-pill span { font-size: 0.6rem; color: var(--text-muted); }
+.capital-pill strong { font-size: 0.7rem; color: var(--text-primary); }
+.capital-actions { margin-top: 0.4rem; }
+
+/* Actions rapides */
+.quick-actions-section { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.section-header h2 { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.1rem; }
+.section-header p { font-size: 0.7rem; color: var(--text-muted); margin: 0; }
+.quick-actions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+.quick-action-card { display: flex; gap: 0.3rem; padding: 0.4rem; border-radius: var(--border-radius); background: var(--bg-card); border: 1px solid var(--border-color); text-decoration: none; color: var(--text-primary); transition: var(--transition); align-items: center; }
+.quick-action-card:hover { border-color: var(--border-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.quick-action-icon { width: 28px; height: 28px; border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.quick-action-content { display: flex; flex-direction: column; gap: 0.05rem; }
+.quick-action-title { font-size: 0.7rem; font-weight: 600; }
+.quick-action-subtitle { font-size: 0.6rem; color: var(--text-muted); }
+
+/* Cartes modernes compactes */
+.card-modern {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.6rem;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: var(--transition);
+}
+
+.card-modern:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-modern:hover::before {
+    transform: scaleX(1);
+}
+
+/* Carte de solde */
+.balance-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.card-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.card-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.card-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.card-footer-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: auto;
+}
+
+/* Badges */
+.badge-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.4rem;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+/* Boutons compacts */
+.btn-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--border-radius);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.btn-compact.btn-primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-compact.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-compact.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.btn-compact.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+/* Cartes de statistiques */
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-link {
+    font-size: 0.7rem;
+    color: var(--primary);
+    text-decoration: none;
+    margin-top: 0.25rem;
+    display: inline-block;
+}
+
+.stat-link:hover {
+    color: var(--primary-hover);
+}
+
+/* Cartes d'actions */
+.action-card {
+    padding: var(--spacing-md);
+}
+
+.action-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.action-link:hover {
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.action-icon-compact {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: var(--transition);
+}
+
+.action-link:hover .action-icon-compact {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.action-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Transactions */
+.transactions-card {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+.transactions-list-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: calc(100vh - 380px);
+    overflow-y: auto;
+}
+
+.transactions-list-compact::-webkit-scrollbar {
+    width: 4px;
+}
+
+.transactions-list-compact::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.transactions-list-compact::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: var(--border-radius-full);
+}
+
+.transaction-row {
+    display: grid;
+    grid-template-columns: 8px 1fr;
+    gap: 0.4rem;
+    align-items: flex-start;
+    padding: 0.35rem 0.4rem 0.35rem calc(0.4rem + 4px);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    position: relative;
+}
+
+.transaction-row:hover {
+    background: var(--bg-secondary);
+}
+
+.transaction-timeline-dot { width: 5px; height: 5px; border-radius: 999px; background: var(--primary); margin-top: 0.4rem; position: relative; }
+.transaction-timeline-dot::after { content: ''; position: absolute; top: 5px; left: 2px; width: 1px; height: calc(100% + 8px); background: var(--border-color); }
+.transaction-row:last-child .transaction-timeline-dot::after { display: none; }
+.transaction-main { display: flex; flex-direction: column; gap: 0.1rem; }
+.transaction-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.3rem; }
+.transaction-bottom { display: flex; justify-content: space-between; align-items: center; gap: 0.3rem; }
+.transaction-tag { font-size: 0.6rem; padding: 0.15rem 0.4rem; border-radius: 999px; background: var(--bg-secondary); color: var(--text-secondary); }
+
+.transaction-type-compact {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.05rem;
+}
+
+.transaction-date-compact {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+.transaction-amount-compact {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.transaction-amount-compact.positive {
+    color: #10b981;
+}
+
+.transaction-amount-compact.negative {
+    color: #ef4444;
+}
+
+.link-text {
+    font-size: 0.65rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link-text:hover {
+    color: var(--primary-hover);
+}
+
+.empty-state-compact {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+}
+
+.empty-state-compact i {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    opacity: 0.5;
+}
+
+.empty-state-compact p {
+    font-size: 0.875rem;
+}
+
+/* Bouton toggle actions - Design ultra moderne */
+.toggle-actions-btn {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    border-radius: var(--border-radius-full);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-actions-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+.toggle-actions-btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.toggle-actions-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
+}
+
+.toggle-actions-btn:hover i {
+    transform: scale(1.1);
+}
+
+.toggle-actions-btn:active {
+    transform: scale(0.95);
+}
+
+.toggle-actions-btn i.toggle-icon {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    transform: rotate(0deg); /* section fermée : chevron vers le bas */
+    font-size: 0.8rem;
+}
+
+/* État ouverte : chevron vers le haut */
+.toggle-actions-btn:not(.collapsed) i.toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Wrapper pour animation fluide */
+.quick-actions-wrapper {
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+}
+
+.quick-actions-wrapper:not(.collapsed) {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 0.2rem;
+}
+
+/* Responsive - Multi-colonnes sur mobile */
+@media (max-width: 1200px) {
+    .dashboard-main-layout { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr); gap: var(--spacing-md); }
+    .quick-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+    .dashboard-modern { 
+        padding: 0.1rem var(--spacing-sm) 0.15rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .transactions-card {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .dashboard-hero {
+        margin-bottom: var(--spacing-xs);
+        margin-top: 0;
+    }
+    
+    .dashboard-main-layout { 
+        grid-template-columns: 1fr; 
+        gap: var(--spacing-sm);
+    }
+    
+    .dashboard-main-left {
+        gap: var(--spacing-xs);
+    }
+    
+    .hero-main { 
+        flex-direction: column; 
+        gap: var(--spacing-xs); 
+    }
+    
+    .hero-left h1 { 
+        font-size: 1.2rem; 
+        margin-bottom: 0.15rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.8rem;
+        margin: 0;
+    }
+    
+    .hero-meta { 
+        justify-content: flex-start; 
+        gap: var(--spacing-xs);
+        width: 100%;
+    }
+    
+    .hero-meta-item {
+        min-width: auto;
+        flex: 1;
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .meta-label {
+        font-size: 0.65rem;
+    }
+    
+    .meta-value {
+        font-size: 0.8rem;
+    }
+    
+    .balances-row { 
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xs);
+    }
+    
+    .balance-main,
+    .balance-secondary {
+        flex: 1;
+    }
+    
+    .card-modern {
+        padding: var(--spacing-sm);
+    }
+    
+    .card-value-large { 
+        font-size: 1.1rem; 
+    }
+    
+    .card-value {
+        font-size: 1.1rem;
+    }
+    
+    .card-label {
+        font-size: 0.7rem;
+    }
+    
+    .quick-actions-section {
+        margin-top: var(--spacing-xs);
+    }
+    
+    .quick-actions-grid { 
+        grid-template-columns: repeat(2, minmax(0, 1fr)); 
+        gap: var(--spacing-xs);
+    }
+    
+    .quick-action-card {
+        padding: 0.5rem;
+    }
+    
+    .quick-action-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+    
+    .quick-action-title {
+        font-size: 0.75rem;
+    }
+    
+    .quick-action-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .capital-details {
+        gap: var(--spacing-xs);
+        margin-top: var(--spacing-xs);
+    }
+    
+    .capital-pill {
+        padding: 0.3rem 0.5rem;
+    }
+    
+    .capital-pill span {
+        font-size: 0.65rem;
+    }
+    
+    .capital-pill strong {
+        font-size: 0.75rem;
+    }
+    
+    .btn-compact {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
+    }
+    
+    .section-header h2 {
+        font-size: 0.9rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .section-header p {
+        font-size: 0.75rem;
+        margin: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-modern { 
+        padding: 0.1rem var(--spacing-xs) 0.15rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .transactions-card {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .dashboard-hero {
+        margin-bottom: 0.25rem;
+        margin-top: 0;
+    }
+    
+    .hero-left h1 { 
+        font-size: 1.1rem; 
+        margin-bottom: 0.1rem;
+    }
+    
+    .hero-kicker {
+        font-size: 0.7rem;
+        margin-bottom: 0.15rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.75rem;
+        margin: 0;
+    }
+    
+    .hero-meta {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+    
+    .hero-meta-item {
+        min-width: calc(50% - 0.15rem);
+        padding: 0.35rem 0.4rem;
+    }
+    
+    .meta-label {
+        font-size: 0.6rem;
+    }
+    
+    .meta-value {
+        font-size: 0.75rem;
+    }
+    
+    .balances-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .card-modern {
+        padding: var(--spacing-xs);
+    }
+    
+    .card-value-large {
+        font-size: 1rem;
+    }
+    
+    .card-value {
+        font-size: 1rem;
+    }
+    
+    .card-label {
+        font-size: 0.65rem;
+    }
+    
+    .quick-actions-section {
+        margin-top: var(--spacing-xs);
+    }
+    
+    .quick-actions-grid { 
+        grid-template-columns: repeat(2, minmax(0, 1fr)); 
+        gap: 0.4rem;
+    }
+    
+    .quick-action-card {
+        padding: 0.45rem;
+    }
+    
+    .quick-action-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+    
+    .quick-action-title {
+        font-size: 0.7rem;
+    }
+    
+    .quick-action-subtitle {
+        font-size: 0.65rem;
+    }
+    
+    .capital-details {
+        gap: 0.3rem;
+    }
+    
+    .capital-pill {
+        padding: 0.25rem 0.4rem;
+    }
+    
+    .capital-pill span {
+        font-size: 0.6rem;
+    }
+    
+    .capital-pill strong {
+        font-size: 0.7rem;
+    }
+    
+    .btn-compact {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .transaction-row {
+        padding: var(--spacing-xs);
+    }
+    
+    .transaction-type-compact {
+        font-size: 0.75rem;
+    }
+    
+    .transaction-amount-compact {
+        font-size: 0.8rem;
+    }
+    
+    .transaction-date-compact {
+        font-size: 0.65rem;
+    }
+    
+    .transaction-tag {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        }
+    }
+</style>
+
+<script>
+function toggleQuickActions() {
+    const wrapper = document.getElementById('quick-actions-wrapper');
+    const btn = document.querySelector('.toggle-actions-btn');
+    
+    if (!wrapper || !btn) return;
+    
+    const isCollapsed = wrapper.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+        // Dérouler avec animation
+        wrapper.classList.remove('collapsed');
+        btn.classList.remove('collapsed');
+            } else {
+        // Replier avec animation
+        wrapper.classList.add('collapsed');
+        btn.classList.add('collapsed');
+    }
+}
+
+// Par défaut, les actions sont repliées
+    document.addEventListener('DOMContentLoaded', function() {
+    const wrapper = document.getElementById('quick-actions-wrapper');
+    const btn = document.querySelector('.toggle-actions-btn');
+    
+    if (wrapper) {
+        wrapper.classList.add('collapsed');
+    }
+    
+    if (btn) {
+        btn.classList.add('collapsed');
+    }
+    });
+</script>
+{% endblock %}

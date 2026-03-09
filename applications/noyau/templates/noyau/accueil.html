@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<style>
+/* Page d'accueil 2026 - Ultra-minimaliste et compacte */
+.home-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-minimal {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-minimal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.6;
+}
+
+.hero-cta {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-hero {
+    padding: 0.875rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.btn-hero-primary {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+}
+
+.btn-hero-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-hero-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-hero-secondary:hover {
+    background: var(--bg-card);
+    border-color: var(--border-hover);
+}
+
+/* Stats compactes */
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    max-width: 500px;
+    margin: var(--spacing-xl) auto 0;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Features minimalistes - 3 seulement */
+.features-minimal {
+    padding: var(--spacing-lg) 0 var(--spacing-md);
+    background: var(--bg-secondary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.feature-item {
+    text-align: center;
+    padding: var(--spacing-md);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--spacing-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+.feature-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.feature-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Mobile optimisé - éléments plus compacts */
+@media screen and (max-width: 768px) {
+    .home-wrapper {
+        min-height: calc(100vh - 120px); /* occuper presque tout l'écran sous le header + nav mobile */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .hero-minimal {
+        min-height: 40vh;
+        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .hero-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-hero {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-md);
+        max-width: 100%;
+    }
+    
+    .stat-value {
+        font-size: 1.125rem;
+    }
+    
+    .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .features-minimal {
+        padding: var(--spacing-sm) 0 var(--spacing-xs);
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 colonnes horizontales sur mobile */
+        gap: var(--spacing-sm);
+    }
+    
+    .feature-item {
+        padding: var(--spacing-sm);
+    }
+    
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .feature-title {
+        font-size: 0.85rem;
+    }
+    
+    .feature-desc {
+        font-size: 0.75rem;
+    }
+}
+</style>
+
+<div class="home-wrapper">
+    <!-- Hero Section Minimaliste -->
+    <section class="hero-minimal">
+        <div class="hero-content">
+        <h1 class="hero-title">Génerez des revenus quotidiens</h1>
+        <p class="hero-subtitle">Plateforme de trading avec gains quotidiens garantis et retraits rapides</p>
+        {% if not user.is_authenticated %}
+        <div class="hero-cta">
+            <a href="{% url 'inscription' %}" class="btn btn-hero btn-hero-primary">
+                Commencer maintenant
+            </a>
+            <a href="{% url 'connexion' %}" class="btn btn-hero btn-hero-secondary">
+                Se connecter
+            </a>
+        </div>
+        {% else %}
+        <div class="hero-cta">
+            <a href="{% url 'tableau_de_bord' %}" class="btn btn-hero btn-hero-primary">
+                Accéder au tableau de bord
+            </a>
+        </div>
+            {% endif %}
+        </div>
+        
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-value">50k+</div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5%</div>
+                <div class="stat-label">Gain/jour</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24h</div>
+                <div class="stat-label">Retraits</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Minimalistes - 3 seulement -->
+    <section class="features-minimal">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3 class="feature-title">Gains quotidiens</h3>
+                    <p class="feature-desc">Jusqu'à 5% de gains quotidiens</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Sécurité</h3>
+                    <p class="feature-desc">Transactions sécurisées</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="feature-title">Parrainage</h3>
+                    <p class="feature-desc">Gagnez des bonus</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

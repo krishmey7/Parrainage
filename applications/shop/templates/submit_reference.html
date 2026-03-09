@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block contenu %}
+<div class="order-validation-container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Validation de votre Dépôt</h2>
+        </div>
+
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <div class="order-info">
+                <h3><i class="fas fa-shopping-cart"></i> Depôt en attente</h3>
+                <div class="order-reference">{{ order }}</div>
+                <p class="instruction-text">Pour finaliser votre Dépôt, veuillez saisir la référence reçue par SMS.</p>
+                <p class="instruction-text">Ecrivez même le dernier point, s'il existe</p>
+            </div>
+
+            <form method="POST" class="validation-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="reference_code">Référence reçue par SMS (Ref: ...)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="reference_code" name="reference_code" placeholder="Ex: CO250827.1155.A13629">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Valider le dépôt
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Font Awesome pour les icônes -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- ===== Modal d'erreur ===== -->
+<div id="errorModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-title">Message</div>
+        <div id="errorMessage"></div>
+        <button class="btn-close">OK</button>
+    </div>
+</div>
+
+
+
+{% if messages %}
+
+{% endif %}
+{% endblock %}

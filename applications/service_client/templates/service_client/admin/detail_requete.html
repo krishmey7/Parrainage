@@ -1,0 +1,103 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Admin - Requête #{{ requete.id }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Requête #{{ requete.id }} - {{ requete.titre }}</h2>
+            <div>
+                {% if requete.statut == 'non_traite' %}
+                    <span class="badge badge-danger">{{ requete.get_statut_display }}</span>
+                {% elif requete.statut == 'en_cours' %}
+                    <span class="badge badge-warning">{{ requete.get_statut_display }}</span>
+                {% elif requete.statut == 'traite' %}
+                    <span class="badge badge-success">{{ requete.get_statut_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div>
+                <strong>Utilisateur :</strong> {{ requete.utilisateur.username }} ({{ requete.utilisateur.email }})
+            </div>
+            <div>
+                <strong>Priorité :</strong> {{ requete.get_priorite_display }}
+            </div>
+            <div>
+                <strong>Catégorie :</strong> {{ requete.categorie|default:"Non spécifiée" }}
+            </div>
+            <div>
+                <strong>Créé le :</strong> {{ requete.date_creation|date:"d/m/Y à H:i" }}
+            </div>
+            <div>
+                <strong>Dernière modification :</strong> {{ requete.date_modification|date:"d/m/Y à H:i" }}
+            </div>
+            {% if requete.date_fermeture %}
+                <div>
+                    <strong>Fermé le :</strong> {{ requete.date_fermeture|date:"d/m/Y à H:i" }}
+                </div>
+            {% endif %}
+            {% if requete.assigne_a %}
+                <div>
+                    <strong>Assigné à :</strong> {{ requete.assigne_a.username }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <h3>Description</h3>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; white-space: pre-wrap;">{{ requete.description }}</div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <a href="{% url 'admin_ajouter_reponse' requete.pk %}" class="btn btn-success">Ajouter une réponse</a>
+            <a href="{% url 'admin_changer_statut' requete.pk %}" class="btn btn-warning">Changer le statut</a>
+            <a href="{% url 'admin_liste_requetes' %}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+    </div>
+</div>
+
+<!-- Réponses -->
+{% if reponses %}
+    <div class="card">
+        <div class="card-header">
+            <h3>Conversation ({{ reponses|length }} réponse{{ reponses|length|pluralize }})</h3>
+        </div>
+        <div class="card-body">
+            {% for reponse in reponses %}
+                <div class="reponse {% if reponse.est_interne %}reponse-interne{% endif %}">
+                    <div class="reponse-header">
+                        <div>
+                            <strong>
+                                {% if reponse.est_interne %}
+                                    Note interne - {{ reponse.auteur.username }}
+                                {% else %}
+                                    {{ reponse.auteur.username }}
+                                {% endif %}
+                            </strong>
+                            {% if reponse.est_interne %}
+                                <span class="badge badge-warning" style="margin-left: 0.5rem;">Interne</span>
+                            {% endif %}
+                        </div>
+                        <div>{{ reponse.date_creation|date:"d/m/Y à H:i" }}</div>
+                    </div>
+                    <div style="white-space: pre-wrap;">{{ reponse.message }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body">
+            <div class="empty-state">
+                <h3>Aucune réponse pour le moment</h3>
+                <p>Cette requête n'a pas encore de réponse.</p>
+                <a href="{% url 'admin_ajouter_reponse' requete.pk %}" class="btn btn-success">Ajouter une réponse</a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,280 @@
+/* ============================================
+   PAGE ACCUEIL - DESIGN ULTRA-MODERNE
+   ============================================ */
+
+/* Hero Section avec gradient animé */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-gradient);
+    overflow: hidden;
+    padding: var(--spacing-2xl) var(--spacing-lg);
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: heroFloat 15s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, -20px) scale(1.1); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: var(--text-white);
+    max-width: 900px;
+    animation: fadeIn 1s ease-out;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.2;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero p {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.95;
+    line-height: 1.8;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-xl);
+}
+
+.btn {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: var(--border-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-base);
+}
+
+.btn-primary {
+    background: var(--text-white);
+    color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-white);
+    border: 2px solid var(--text-white);
+}
+
+.btn-outline:hover {
+    background: var(--text-white);
+    color: var(--primary);
+    transform: translateY(-4px) scale(1.05);
+}
+
+/* Sections */
+.about,
+.timeline,
+.stats,
+.cta {
+    padding: var(--spacing-2xl) 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.section-title h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    padding-bottom: var(--spacing-md);
+}
+
+.section-title h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: var(--border-radius-full);
+}
+
+/* Cards modernes */
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl);
+    align-items: center;
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+.about-image {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition-base);
+}
+
+.about-image:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Stats Section */
+.stats {
+    background: var(--dark-gradient);
+    color: var(--text-white);
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
+    text-align: center;
+}
+
+.stat-item {
+    padding: var(--spacing-lg);
+}
+
+.stat-number {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.stat-text {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Timeline */
+.timeline {
+    background: var(--bg-secondary);
+}
+
+.timeline-container {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--spacing-lg) 0;
+}
+
+.timeline-item {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+}
+
+.timeline-content {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-base);
+}
+
+.timeline-content:hover {
+    transform: translateX(10px);
+    box-shadow: var(--shadow-xl);
+}
+
+.timeline-year {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* CTA Section */
+.cta {
+    background: var(--bg-primary);
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--spacing-lg);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .about-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}

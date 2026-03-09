@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<div class="page-modern">
+    <div class="page-header-compact">
+        <h1>Mon Code de Parrainage</h1>
+        <p class="text-muted">Partagez et gagnez des bonus</p>
+    </div>
+
+    <div class="page-grid">
+        <!-- Code de parrainage - 2 colonnes -->
+        <div class="card-modern code-card" style="grid-column: span 2;">
+            <div class="card-header-compact">
+                <span class="card-label">Votre code unique</span>
+            </div>
+            <div class="code-display">
+                <div class="code-value">{{ code_parrainage }}</div>
+                <button onclick="copierCode()" class="btn-compact btn-primary">
+                    <i class="fas fa-copy"></i>
+                    <span>Copier</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Lien de parrainage - 2 colonnes -->
+        <div class="card-modern link-card" style="grid-column: span 2;">
+            <div class="card-header-compact">
+                <span class="card-label">Lien de parrainage</span>
+            </div>
+            <div class="link-display">
+                <input type="text" value="{{ lien_parrainage }}" id="lienParrainage" readonly class="link-input">
+                <button onclick="copierLien()" class="btn-compact btn-secondary">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Partage rapide - 4 colonnes -->
+        <div class="card-modern share-card" style="grid-column: span 4;">
+            <div class="card-header-compact">
+                <span class="card-label">Partager directement</span>
+            </div>
+            <div class="share-grid">
+                <a href="#" onclick="shareOnFacebook(); return false;" class="share-btn" style="background: #1877f2;">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
+                </a>
+                <a href="#" onclick="shareOnTwitter(); return false;" class="share-btn" style="background: #1da1f2;">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                <a href="#" onclick="shareOnWhatsApp(); return false;" class="share-btn" style="background: #25d366;">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="#" onclick="shareByEmail(); return false;" class="share-btn" style="background: var(--primary);">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Avantages VIP - 4 colonnes -->
+        <div class="card-modern vip-card" style="grid-column: span 4;">
+            <div class="card-header-compact">
+                <span class="card-label">Avantages du parrainage</span>
+            </div>
+            <div class="vip-grid">
+                <div class="vip-item-compact">
+                    <div class="vip-badge-compact" style="background: linear-gradient(135deg, #667eea, #764ba2);">VIP 1</div>
+                    <div class="vip-percentage-compact">10%</div>
+                    <ul class="vip-list-compact">
+                        <li><i class="fas fa-check"></i> Prime trading</li>
+                        <li><i class="fas fa-check"></i> Starter prime</li>
+                    </ul>
+                </div>
+                <div class="vip-item-compact">
+                    <div class="vip-badge-compact" style="background: linear-gradient(135deg, #f093fb, #f5576c);">VIP 2</div>
+                    <div class="vip-percentage-compact">12%</div>
+                    <ul class="vip-list-compact">
+                        <li><i class="fas fa-check"></i> Altime trading</li>
+                        <li><i class="fas fa-check"></i> Mango capital</li>
+                    </ul>
+                </div>
+                <div class="vip-item-compact">
+                    <div class="vip-badge-compact" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">VIP 3</div>
+                    <div class="vip-percentage-compact">13%</div>
+                    <ul class="vip-list-compact">
+                        <li><i class="fas fa-check"></i> Tranford global</li>
+                        <li><i class="fas fa-check"></i> World Trading</li>
+                    </ul>
+                </div>
+                <div class="vip-item-compact">
+                    <div class="vip-badge-compact" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">VIP 4</div>
+                    <div class="vip-percentage-compact">15%</div>
+                    <ul class="vip-list-compact">
+                        <li><i class="fas fa-check"></i> Scofield trading</li>
+                        <li><i class="fas fa-check"></i> Ferguson capital</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-modern {
+    padding: var(--spacing-md);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header-compact {
+    margin-bottom: var(--spacing-lg);
+}
+
+.page-header-compact h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.page-header-compact .text-muted {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.code-card,
+.link-card {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.code-display,
+.link-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.code-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.link-display {
+    flex-direction: row;
+    width: 100%;
+}
+
+.link-input {
+    flex: 1;
+    padding: 0.75rem var(--spacing-md);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
+}
+
+.share-card {
+    padding: var(--spacing-lg);
+}
+
+.share-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.share-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    color: white;
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+.share-btn i {
+    font-size: 1.5rem;
+}
+
+.vip-card {
+    padding: var(--spacing-lg);
+}
+
+.vip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.vip-item-compact {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    text-align: center;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.vip-item-compact:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.vip-badge-compact {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-full);
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.vip-percentage-compact {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.vip-list-compact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.vip-list-compact li {
+    padding: 0.25rem 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.vip-list-compact i {
+    color: #10b981;
+    font-size: 0.7rem;
+}
+
+.btn-compact.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-compact.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+@media (max-width: 1200px) {
+    .page-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .code-card,
+    .link-card {
+        grid-column: span 3 !important;
+    }
+    
+    .share-card,
+    .vip-card {
+        grid-column: span 3 !important;
+    }
+    
+    .share-grid,
+    .vip-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .page-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .code-card,
+    .link-card,
+    .share-card,
+    .vip-card {
+        grid-column: span 1 !important;
+    }
+    
+    .share-grid,
+    .vip-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function copierCode() {
+    const code = '{{ code_parrainage }}';
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Code copié !');
+    });
+}
+
+function copierLien() {
+    const lien = document.getElementById('lienParrainage').value;
+    navigator.clipboard.writeText(lien).then(() => {
+        alert('Lien copié !');
+    });
+}
+
+function shareOnFacebook() {
+    const url = encodeURIComponent('{{ lien_parrainage }}');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent('{{ lien_parrainage }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
+}
+
+function shareOnWhatsApp() {
+    const text = encodeURIComponent('Rejoignez-moi sur Genius Africa avec ce lien: {{ lien_parrainage }}');
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function shareByEmail() {
+    const subject = encodeURIComponent('Rejoignez Genius Africa');
+    const body = encodeURIComponent('Rejoignez-moi sur Genius Africa avec ce lien: {{ lien_parrainage }}');
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+</script>
+{% endblock %}

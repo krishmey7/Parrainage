@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achat : {{ produit.nom }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Achat : {{ produit.nom }}</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'tableau_de_bord' %}">Accueil</a> <span>&gt;</span>
+            <a href="{% url 'liste_produits' %}">Marchandises</a> <span>&gt;</span>
+            <span>{{ produit.nom }}</span>
+        </div>
+
+        <!-- Product Section -->
+        <section class="product-section">
+            <div class="product-image" >
+                {% if produit.image %}
+                    <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+                {% else %}
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280; flex-direction: column;">
+                        <i class="fas fa-box-open" style="font-size: 64px; margin-bottom: 20px;"></i>
+                        <p>Image non disponible</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="product-details">
+                <h2 class="product-title">{{ produit.nom }}</h2>
+                <p class="product-description">{{ produit.description }}</p>
+
+                <div class="product-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Prix unitaire</span>
+                        <span class="spec-value">{{ produit.prix }} FC</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Gain quotidien</span>
+                        <span class="spec-value">{{ gain }} CDF</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Durée de l'investissement</span>
+                        <span class="spec-value">{{ produit.duree_jours }} jours</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Gain total</span>
+                        <span class="spec-value">{{ gain_total }} CDF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Purchase Form -->
+        <section class="purchase-form">
+            <h3 class="form-title">Formulaire d'acquisition</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+
+
+                <div class="calculation">
+                    <div class="calculation-row">
+                        <span>Prix unitaire:</span>
+                        <span id="unit-price">{{ produit.prix }} FC</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Quantité:</span>
+                        <span id="quantity">1</span>
+                    </div>
+                    <div class="calculation-row">
+                        <span>Total à payer:</span>
+                        <span id="total-price">{{ produit.prix }} FC</span>
+                    </div>
+                    <div class="calculation-row calculation-total">
+                        <span>Gain quotidien estimé:</span>
+                        <span id="daily-yield">{{ gain }} CDF</span>
+                    </div>
+                    <div class="calculation-row calculation-total">
+                        <span>Gain total sur {{ produit.duree_jours }} jours:</span>
+                        <span id="total-yield">{{ gain_total }}CDF</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-lock"></i> Confirmer l'acquisition
+                </button>
+            </form>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="benefits">
+            <div class="section-title">
+                <h2>Avantages de cet investissement</h2>
+                <p>Découvrez pourquoi cet investissement est avantageux pour vous</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="benefit-title">Rendement Garanti</h3>
+                    <p class="benefit-description">Bénéficiez de {{ produit.taux_quotidien }}% de rendement quotidien garanti pendant {{ produit.duree_jours }} jours.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="benefit-title">Sécurité</h3>
+                    <p class="benefit-description">Votre investissement est entièrement sécurisé et assuré contre les pertes.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="benefit-title">Disponibilité</h3>
+                    <p class="benefit-description">Retirez vos gains à tout moment après les 24 heures de maturation.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+<!-- ===== Modal d’erreur ===== -->
+<div id="errorModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-title">Erreur</div>
+        <div id="errorMessage"></div>
+        <button class="btn-close">OK</button>
+    </div>
+</div>
+
+
+{% if messages %}
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<div class="page-modern">
+    <div class="page-header-compact">
+        <h1>Nos Produits d'Investissement</h1>
+        <p class="text-muted">Choisissez le trader qui correspond à vos objectifs</p>
+    </div>
+
+    {% if produits %}
+    <div class="products-grid-compact">
+        {% for produit in produits %}
+        <div class="product-card-compact">
+            {% if produit.benefice and produit.benefice > produit.prix %}
+            <div class="product-badge-compact">Recommandé</div>
+            {% endif %}
+            
+            <div class="product-header-compact">
+                {% if produit.image %}
+                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-image-compact">
+                {% else %}
+                <div class="product-image-placeholder-compact">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="product-body-compact">
+                <h3 class="product-title-compact">{{ produit.nom }}</h3>
+                <p class="product-description-compact">{{ produit.description|truncatewords:15 }}</p>
+                
+                <div class="product-stats-compact">
+                    <div class="stat-compact">
+                        <div class="stat-icon-compact" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info-compact">
+                            <div class="stat-value-compact">{{ produit.prix }} FC</div>
+                            <div class="stat-label-compact">Investissement</div>
+                        </div>
+                    </div>
+                    <div class="stat-compact">
+                        <div class="stat-icon-compact" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info-compact">
+                            <div class="stat-value-compact">{{ produit.taux_quotidien }}%</div>
+                            <div class="stat-label-compact">Gain/jour</div>
+                        </div>
+                    </div>
+                    <div class="stat-compact">
+                        <div class="stat-icon-compact" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-info-compact">
+                            <div class="stat-value-compact">{{ produit.duree_jours }}</div>
+                            <div class="stat-label-compact">Jours</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if produit.benefice %}
+                <div class="product-benefit-compact">
+                    <i class="fas fa-gift"></i>
+                    <span>Bénéfice: <strong>{{ produit.benefice }} FC</strong></span>
+                </div>
+                {% endif %}
+                
+                {% if capital_actifs == 0 %}
+                <a href="{% url 'achat' produit.id %}" class="btn-compact btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">
+                    <i class="fas fa-handshake"></i>
+                    <span>Signer le contrat</span>
+                </a>
+                {% else %}
+                <button class="btn-compact btn-secondary" style="width: 100%; margin-top: var(--spacing-sm);" disabled>
+                    <i class="fas fa-lock"></i>
+                    <span>Contrat actif</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state-compact">
+        <i class="fas fa-box-open"></i>
+        <h3>Aucun produit disponible</h3>
+        <p>Les produits seront bientôt disponibles.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.page-modern {
+    padding: var(--spacing-md);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header-compact {
+    margin-bottom: var(--spacing-lg);
+}
+
+.page-header-compact h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.page-header-compact .text-muted {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.products-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.product-card-compact {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+}
+
+.product-card-compact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: var(--transition);
+}
+
+.product-card-compact:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.product-card-compact:hover::before {
+    transform: scaleX(1);
+}
+
+.product-badge-compact {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.7rem;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.product-header-compact {
+    height: 120px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image-compact {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-image-placeholder-compact {
+    font-size: 2.5rem;
+    color: var(--primary);
+    opacity: 0.5;
+}
+
+.product-body-compact {
+    padding: var(--spacing-md);
+}
+
+.product-title-compact {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.product-description-compact {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.product-stats-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+}
+
+.stat-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-icon-compact {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-value-compact {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.125rem;
+}
+
+.stat-label-compact {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-benefit-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: var(--border-radius);
+    color: #10b981;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.product-benefit-compact i {
+    font-size: 0.875rem;
+}
+
+.btn-compact.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    cursor: not-allowed;
+}
+
+.empty-state-compact {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--text-muted);
+}
+
+.empty-state-compact i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.empty-state-compact h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+@media (max-width: 1200px) {
+    .products-grid-compact {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .products-grid-compact {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .product-stats-compact {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid-compact {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

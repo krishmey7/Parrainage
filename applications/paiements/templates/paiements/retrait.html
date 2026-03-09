@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<div class="page-modern">
+    <div class="page-header-compact">
+        <h1>Demande de Retrait</h1>
+        <p class="text-muted">Retirez vos fonds en toute sécurité</p>
+    </div>
+
+    <div class="page-grid">
+        <!-- Formulaire - 3 colonnes -->
+        <div class="card-modern form-card" style="grid-column: span 3;">
+            <div class="card-header-compact">
+                <span class="card-label">Nouvelle demande</span>
+            </div>
+            <form method="post" class="form-compact">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group-compact">
+                        <label for="montant" class="form-label-compact">
+                            <i class="fas fa-coins"></i> Montant (FC)
+                        </label>
+                        <input type="number" id="montant" name="montant" class="form-input-compact" 
+                               step="0.01" min="5000" placeholder="Min: 5 000 FC" required>
+                        <small class="form-text-compact">Disponible: <strong>{{ solde }} FC</strong></small>
+                    </div>
+
+                    <div class="form-group-compact">
+                        <label for="methode" class="form-label-compact">
+                            <i class="fas fa-wallet"></i> Méthode
+                        </label>
+                        <select id="methode" name="methode" class="form-input-compact" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="Orange_money">Orange Money</option>
+                            <option value="M_pesa">M-pesa</option>
+                            <option value="Airtel_money">Airtel Money</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group-compact">
+                    <label for="destination" class="form-label-compact">
+                        <i class="fas fa-mobile-alt"></i> Numéro de téléphone
+                    </label>
+                    <input type="tel" id="destination" name="destination" class="form-input-compact" 
+                           placeholder="0812345678" pattern="\d{10}" minlength="10" maxlength="10" required>
+                    <small class="form-text-compact">10 chiffres requis</small>
+                </div>
+
+                <button type="submit" class="btn-compact btn-primary" style="width: 100%; margin-top: var(--spacing-md);">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Demander le retrait</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Informations - 1 colonne -->
+        <div class="card-modern info-card">
+            <div class="card-header-compact">
+                <span class="card-label">Informations</span>
+            </div>
+            <div class="info-list-compact">
+                <div class="info-item-compact">
+                    <div class="info-icon-compact" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-text-compact">
+                        <div class="info-title">Traitement</div>
+                        <div class="info-desc">24-48h ouvrables</div>
+                    </div>
+                </div>
+                <div class="info-item-compact">
+                    <div class="info-icon-compact" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="info-text-compact">
+                        <div class="info-title">Frais</div>
+                        <div class="info-desc">12,5% minimum</div>
+                    </div>
+                </div>
+                <div class="info-item-compact">
+                    <div class="info-icon-compact" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="info-text-compact">
+                        <div class="info-title">Minimum</div>
+                        <div class="info-desc">5 000 FC</div>
+                    </div>
+                </div>
+                <div class="info-item-compact">
+                    <div class="info-icon-compact" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="info-text-compact">
+                        <div class="info-title">Sécurité</div>
+                        <div class="info-desc">Transactions sécurisées</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for message in messages %}
+        const alert = document.createElement('div');
+        alert.className = 'alert-modern alert-{{ message.tags }}';
+        {% if message.tags == "error" %}
+        alert.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>{{ message|escapejs }}</span>';
+        {% else %}
+        alert.innerHTML = '<i class="fas fa-check-circle"></i><span>{{ message|escapejs }}</span>';
+        {% endif %}
+        document.querySelector('.page-modern').insertBefore(alert, document.querySelector('.page-modern').firstChild);
+        setTimeout(() => alert.remove(), 5000);
+        {% endfor %}
+    });
+</script>
+{% endif %}
+{% endblock %}

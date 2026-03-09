@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ personnel.utilisateur.email }}{% endblock %}
+
+{% block contenu %}
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Primes</title>
+
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="card header">
+            <h1>💰 Historique des Primes</h1>
+            <p class="total-prime">Total des primes reçues : <strong>{{ total_primes }} FC</strong></p>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="card">
+            {% if primes %}
+                <div class="table-container">
+                    <table class="prime-table">
+                        <thead>
+                            <tr>
+                                <th>Objectif</th>
+                                <th>Montant</th>
+                                <th>Filleuls Qualifiés</th>
+                                <th>Date de Versement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prime in primes %}
+                            <tr>
+                                <td>{{ prime.objectif.intitule }}</td>
+                                <td class="montant">{{ prime.montant_prime }} FC</td>
+                                <td>{{ prime.nombre_filleuls_qualifies }}</td>
+                                <td>{{ prime.date_versement|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">💰</div>
+                    <h3>Aucune prime reçue</h3>
+                    <p>Vous n'avez pas encore reçu de primes.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Bouton de retour -->
+        <div style="text-align: center;">
+            <a href="{% url 'personnel:tableau_de_bord' %}" class="btn">
+                ← Retour au tableau de bord
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

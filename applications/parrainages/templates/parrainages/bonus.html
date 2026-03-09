@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenu %}
+<link rel="stylesheet" href="{% static 'bonus.css' %}">
+
+<div class="bonus-container">
+    <div class="bonus-header">
+        <h1>Mes Bonus de Parrainage</h1>
+        <p>Découvrez tous les bonus que vous avez accumulés grâce à votre parrainage</p>
+    </div>
+
+    {% if bonus %}
+    <div class="bonus-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ bonus|length }}</h3>
+                <p>Filleuls parrainés</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_bonus }} FC</h3>
+                <p>Total des gains</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="bonus-table">
+            <thead>
+                <tr>
+                    <th>Filleul</th>
+                    <th>Montant</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bonus_item in bonus %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar">
+                                {{ bonus_item.filleul.email|first|upper }}
+                            </div>
+                            <div class="email">{{ bonus_item.filleul.email }}</div>
+                        </div>
+                    </td>
+                    <td class="amount">{{ bonus_item.montant }} FC</td>
+                    <td class="date">{{ bonus_item.cree_le|date:"d/m/Y H:i" }}</td>
+                    <td><span class="status completed">Complété</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-gift"></i>
+        </div>
+        <h3>Aucun bonus pour le moment</h3>
+        <p>Vous n'avez pas encore reçu de bonus de parrainage. Partagez votre code pour commencer à gagner des récompenses!</p>
+    </div>
+    {% endif %}
+    
+    <div class="actions">
+        <a href="{% url 'mon_code_parrainage' %}" class="btn-primary">
+            <i class="fas fa-share-alt"></i>
+            Voir mon code de parrainage
+        </a>
+    </div>
+</div>
+
+
+{% endblock %}

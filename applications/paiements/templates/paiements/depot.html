@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block contenu %}
+
+
+<div class="deposit-container">
+
+    <h1 class="deposit-title">Demande de Dépôt</h1>
+    
+    <form method="post" class="deposit-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="montant" class="form-required">Montant (FC) :</label>
+            <input type="number" id="montant" name="montant" step="0.01" min="1" placeholder="Entrez le montant à déposer" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-required">Méthode de paiement :</label>
+            <div class="payment-methods">
+                <div class="payment-method" data-value="mobile_money">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Mobile Money</span>
+                </div>
+                <div class="payment-method" data-value="virement_bancaire">
+                    <i class="fas fa-university"></i>
+                    <span>Virement Bancaire</span>
+                </div>
+            </div>
+            <input type="hidden" name="order_reference" value="{{ order.reference_code }}">
+            <select id="methode" name="methode" required style="display: none;">
+                <option value="">- Sélectionnez une méthode -</option>
+                <option value="mobile_money">Mobile Money</option>
+                <option value="virement_bancaire">Virement Bancaire</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="reference">Référence de paiement :</label>
+            <input type="text" id="reference" name="reference" placeholder="Numéro de transaction ou référence">
+        </div>
+        
+        <button type="submit" class="submit-btn">Envoyer la demande</button>
+    </form>
+    
+    <div class="info-box">
+        <p><i class="fas fa-info-circle"></i> Votre déposit sera traité dans les plus brefs délais. Un email de confirmation vous sera envoyé une fois le traitement terminé.</p>
+    </div>
+</div>
+
+{% endblock %}

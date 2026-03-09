@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block contenu %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résilier le contrat</title>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Gestion de votre contrat</h1>
+        <p>Bienvenue sur votre espace de gestion de contrat. Vous pouvez ici consulter les détails de votre engagement, suivre votre consommation et gérer les options de votre signature.</p>
+        <p>Si vous souhaitez mettre fin à votre contrat, veuillez noter que des frais de résiliation anticipée peuvent s'appliquer selon la date de signature de votre contrat.</p>
+
+        <a class="lien-resiliation">Résilier le contrat</a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Résilier votre contrat</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+
+            <div class="modal-content">
+                <p class="modal-text">Voulez-vous vraiment résilier votre contrat ? Cette action est irréversible et entraînera la cessation de tous les services associés à votre compte.</p>
+
+                <div class="modal-warning">
+                    <strong>Attention :</strong> Si vous résiliez votre contrat avant la fin de votre engagement, des frais de résiliation anticipée peuvent s'appliquer. Ces frais sont calculés en fonction du temps restant sur votre engagement et sont détaillés dans les conditions générales.
+                </div>
+
+                <p class="modal-text">Nous serions désolés de vous voir partir. Avant de finaliser votre résiliation, souhaitez-vous :</p>
+                <ul>
+
+                    <li>Mettre votre contrat en pause plutôt que de résilier ?</li>
+                    <li>Parler à un conseiller pour une solution adaptée à vos besoins ?</li>
+                    <li>confirmer et suivez les etapes</li>
+                </ul>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn btn-no">Annuler</button>
+                    <button class="modal-btn btn-yes">Confirmer la résiliation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'service_client/base.html' %}
+
+{% block title %}Accueil - Service Client{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-gradient text-center py-5 mb-5 fade-in">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-primary mb-3">Service Client</h1>
+        <p class="lead text-muted mb-0">Nous sommes là pour vous aider ! Faites votre requête et notre équipe vous répondra rapidement.</p>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+    <!-- Action Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card card-custom h-100 text-center fade-in">
+                <div class="card-body p-5">
+                    <div class="icon-circle blue">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <h3 class="card-title h4 mb-3">Nouvelle requête</h3>
+                    <p class="card-text text-muted mb-4">Créez votre requête pour signaler un problème ou poser une question.</p>
+                    <a href="{% url 'creer_requete' %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-plus-circle me-2"></i>Créer une requête
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card card-custom h-100 text-center fade-in">
+                <div class="card-body p-5">
+                    <div class="icon-circle green">
+                        <i class="bi bi-list-ul"></i>
+                    </div>
+                    <h3 class="card-title h4 mb-3">Mes Requêtes</h3>
+                    <p class="card-text text-muted mb-4">Consultez l'état de vos requêtes existantes et suivez les réponses de notre équipe.</p>
+                    <a href="{% url 'liste_requetes' %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-list-ul me-2"></i>Voir mes requêtes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- Login Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card card-custom text-center fade-in">
+                <div class="card-body p-5">
+                    <h2 class="card-title h3 mb-3">Accès au Service Client</h2>
+                    <p class="card-text text-muted mb-4">Veuillez vous connecter pour accéder à toutes les fonctionnalités du service client.</p>
+                    <a href="{% url 'login' %}" class="btn btn-success btn-custom">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Features Section -->
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle light-blue mx-auto">
+                <i class="bi bi-clock"></i>
+            </div>
+            <h4 class="h5 mb-2">Réponse rapide</h4>
+            <p class="text-muted small">Nous nous engageons à répondre dans les 24h</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle yellow mx-auto">
+                <i class="bi bi-people"></i>
+            </div>
+            <h4 class="h5 mb-2">Équipe dédiée</h4>
+            <p class="text-muted small">Une équipe d'experts à votre service</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="text-center fade-in">
+            <div class="icon-circle red mx-auto">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h4 class="h5 mb-2">Sécurisé</h4>
+            <p class="text-muted small">Vos données sont protégées et sécurisées</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

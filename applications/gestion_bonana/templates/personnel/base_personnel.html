@@ -1,0 +1,39 @@
+<!-- templates/personnel/base_personnel.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Espace Personnel{% endblock %}</title>
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'personnel:tableau_de_bord' %}" class="navbar-brand">
+                Espace Personnel
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="{% url 'personnel:tableau_de_bord' %}">Tableau de Bord</a></li>
+                <li><a href="{% url 'personnel:liste_objectifs' %}">Objectifs</a></li>
+                <li><a href="{% url 'personnel:mes_postulations' %}">Mes Postulations</a></li>
+                <li><a href="{% url 'personnel:historique_primes' %}">Primes</a></li>
+                <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

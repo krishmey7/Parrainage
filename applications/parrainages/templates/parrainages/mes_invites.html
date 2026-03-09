@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contenu %}
+
+
+
+<div class="container">
+    <h1>👥 Mes Filleuls</h1>
+
+    {% if filleuls_bonus %}
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Date d'inscription</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for filleul in filleuls_bonus %}
+            <tr style ="padding: 4px;">
+                <td data-label="Nom">{{ filleul.filleul.email|truncatechars:10 }}</td>
+                <td data-label="Téléphone">{{ filleul.filleul.telephone }}</td>
+                <td data-label="Date">{{ filleul.filleul.date_joined|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-message">
+        🚫 Vous n'avez pas encore de filleuls.
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'mon_code_parrainage' %}" class="btn">
+            🎟️ Voir mon code de parrainage
+        </a>
+    </div>
+</div>
+
+<!-- Petit JS pour effet d'apparition -->
+
+
+{% endblock %}

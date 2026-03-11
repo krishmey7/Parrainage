@@ -21,10 +21,10 @@ from django.conf import settings
 
 
 class BonusParrainage(models.Model):
-    parrain = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bonus_parrainages')
-    filleul = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bonus_parrain')
+    parrain = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bonus_parrainages', verbose_name="Parrain")
+    filleul = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bonus_parrain', verbose_name="Filleul")
     achat = models.OneToOneField('produits.Achat', on_delete=models.CASCADE)
-    montant = models.DecimalField(max_digits=12, decimal_places=2)
+    montant = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Montant du bonus")
     pourcentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     est_premier_achat = models.BooleanField(default=True)
     cree_le = models.DateTimeField(auto_now_add=True)

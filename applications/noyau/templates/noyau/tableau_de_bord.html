@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titre %}Tableau de bord - Genius Africa{% endblock %}
+{% block titre %}Tableau de bord - Global Vision{% endblock %}
 
 {% block contenu %}
 <div class="dashboard-modern">
@@ -18,11 +18,11 @@
                     <span class="meta-value">{% now "d M Y" %}</span>
                 </div>
                 <div class="hero-meta-item">
-                    <span class="meta-label">Gains du jour</span>
+                    <span class="meta-label">Revenus du jour</span>
                     <span class="meta-value positive">+{{ gains_aujourdhui }} CDF</span>
                 </div>
                 <div class="hero-meta-item">
-                    <span class="meta-label">Filleuls actifs</span>
+                    <span class="meta-label">Partenaires actifs</span>
                     <span class="meta-value">{{ user.profil.filleuls.count }}</span>
                 </div>
             </div>
@@ -62,11 +62,11 @@
                         <span class="card-label">Solde capital</span>
                     </div>
                     <div class="card-value">
-                        {% if capital_actifs != 0 and total_trader_inactif != 0 %}
+                        {% if capital_actifs != 0 and total_investissements_inactif != 0 %}
                             {{ totaux_gen }} CDF
                         {% elif capital_actifs == 0 %}
-                            {{ total_trader_inactif }} CDF
-                        {% elif capital_actifs == 0 and total_trader_inactif == 0 %}
+                            {{ total_investissements_inactif }} CDF
+                        {% elif capital_actifs == 0 and total_investissements_inactif == 0 %}
                             {{ totaux_gen }} CDF
                         {% else %}
                             {{ capital_actifs }} CDF
@@ -79,7 +79,7 @@
                             <strong>{{ total_depots }} CDF</strong>
                         </div>
                         <div class="capital-pill">
-                            <span>Filleuls actifs</span>
+                            <span>Partenaires actifs</span>
                             <strong>{{ user.profil.filleuls.count }}</strong>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
                         <div>
                             <h2>Actions rapides</h2>
-                            <p style="font-size: 0.7rem; margin: 0;">Commencez par un dépôt, puis explorez le trading et le parrainage.</p>
+                            <p style="font-size: 0.7rem; margin: 0;">Commencez par un dépôt, puis explorez les investissements et le partenariat.</p>
                         </div>
                         <button class="toggle-actions-btn" onclick="toggleQuickActions()" aria-label="Afficher/Masquer les actions rapides">
                             <i class="fas fa-chevron-down toggle-icon" id="toggle-actions-icon"></i>
@@ -132,20 +132,20 @@
 
                     <a href="{% url 'liste_produits' %}" class="quick-action-card">
                         <div class="quick-action-icon" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
-                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-industry"></i>
                         </div>
                         <div class="quick-action-content">
-                            <span class="quick-action-title">Trader</span>
-                            <span class="quick-action-subtitle">Choisir un produit</span>
+                            <span class="quick-action-title">Investissements</span>
+                            <span class="quick-action-subtitle">Choisir une opportunité</span>
                         </div>
                     </a>
 
                     <a href="{% url 'mon_code_parrainage' %}" class="quick-action-card">
                         <div class="quick-action-icon" style="background: rgba(14, 165, 233, 0.12); color: #0ea5e9;">
-                            <i class="fas fa-gift"></i>
+                            <i class="fas fa-handshake"></i>
                         </div>
                         <div class="quick-action-content">
-                            <span class="quick-action-title">Parrainage</span>
+                            <span class="quick-action-title">Partenariat</span>
                             <span class="quick-action-subtitle">Partager votre code</span>
                         </div>
                     </a>
@@ -155,8 +155,8 @@
                             <i class="fas fa-coins"></i>
                         </div>
                         <div class="quick-action-content">
-                            <span class="quick-action-title">Bonus</span>
-                            <span class="quick-action-subtitle">Vos gains</span>
+                            <span class="quick-action-title">Commissions</span>
+                            <span class="quick-action-subtitle">Vos revenus</span>
                         </div>
                     </a>
 
@@ -165,7 +165,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="quick-action-content">
-                            <span class="quick-action-title">Mes filleuls</span>
+                            <span class="quick-action-title">Mes partenaires</span>
                             <span class="quick-action-subtitle">Voir votre réseau</span>
                         </div>
                     </a>
@@ -200,7 +200,7 @@
                                     {% elif transaction.type == 'retrait' %}
                                         Retrait
                                     {% elif transaction.type == 'bonus_inscription' %}
-                                        Bonus
+                                        Commission
                                     {% else %}
                                         Mouvement
                                     {% endif %}

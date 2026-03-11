@@ -1,6 +1,6 @@
 {
-  "name": "Genius Africa - Plateforme de Trading",
-  "short_name": "Genius Africa",
+  "name": "Global Vision - Plateforme de Trading",
+  "short_name": "Global Vision",
   "description": "Plateforme de trading avec gains quotidiens garantis et retraits rapides",
   "start_url": "/",
   "scope": "/",
@@ -11,13 +11,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/static/image/Genius_Africa.png",
+      "src": "/static/image/global_vision.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/image/Genius_Africa.png",
+      "src": "/static/image/global_vision.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -31,14 +31,14 @@
       "short_name": "Dashboard",
       "description": "Accéder au tableau de bord",
       "url": "/",
-      "icons": [{ "src": "/static/image/Genius_Africa.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/static/image/global_vision.png", "sizes": "96x96" }]
     },
     {
       "name": "Dépôt",
       "short_name": "Dépôt",
       "description": "Faire un dépôt",
       "url": "/shop/create/",
-      "icons": [{ "src": "/static/image/Genius_Africa.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/static/image/global_vision.png", "sizes": "96x96" }]
     }
   ],
   "prefer_related_applications": false,

@@ -1,5 +1,5 @@
 /**
- * Gestionnaire PWA pour Genius Africa
+ * Gestionnaire PWA pour Global Vision
  * Gère l'installation, les notifications hors ligne, etc.
  */
 
@@ -114,7 +114,7 @@
                             Installer l'application
                         </div>
                         <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                            Installez Genius Africa sur votre bureau pour un accès rapide
+                            Installez Global Vision sur votre bureau pour un accès rapide
                         </div>
                     </div>
                     <button onclick="closeInstallPrompt()" style="
@@ -215,7 +215,7 @@
                     'Pour installer l\'application sur votre téléphone :\n\n' +
                     '1. Appuyez sur le menu (⋮) en haut à droite de Chrome\n' +
                     '2. Sélectionnez "Installer l\'application" ou "Ajouter à l\'écran d\'accueil"\n' +
-                    '3. Validez pour ajouter Genius Africa sur votre écran d\'accueil.'
+                    '3. Validez pour ajouter Global Vision sur votre écran d\'accueil.'
                 );
             } else {
                 // Instructions desktop (Chrome / Edge) - Plus détaillées
@@ -228,7 +228,7 @@
                     instructions += '1. Regardez dans la barre d\'adresse de Chrome (en haut à droite)\n';
                     instructions += '   Vous devriez voir une icône d\'installation (⊞) ou un bouton "Installer".\n';
                     instructions += '2. Cliquez sur cette icône ou le bouton "Installer".\n';
-                    instructions += '3. Confirmez l\'installation de "Genius Africa".\n\n';
+                    instructions += '3. Confirmez l\'installation de "Global Vision".\n\n';
                     instructions += 'OU utilisez le menu (⋮) > "Installer l\'application".';
                 } else if (isEdge) {
                     instructions += 'Pour installer dans Microsoft Edge :\n\n';
@@ -236,7 +236,7 @@
                     instructions += '2. Sélectionnez "Outils supplémentaires" (ou "More tools")\n';
                     instructions += '3. Cliquez sur "Applications" (ou "Apps")\n';
                     instructions += '4. Cliquez sur "Installer ce site en tant qu\'application"\n';
-                    instructions += '5. Confirmez l\'installation de "Genius Africa"\n\n';
+                    instructions += '5. Confirmez l\'installation de "Global Vision"\n\n';
                     instructions += 'OU cherchez l\'icône d\'installation (⊞) dans la barre d\'adresse.';
                 } else {
                     instructions += '1. Dans la barre d\'adresse de votre navigateur,\n';
@@ -244,7 +244,7 @@
                     instructions += '2. Cliquez dessus et confirmez l\'installation.\n\n';
                 }
                 
-                instructions += '\nVous pourrez ensuite lancer Genius Africa comme une application de bureau.';
+                instructions += '\nVous pourrez ensuite lancer Global Vision comme une application de bureau.';
                 
                 alert(instructions);
             }
@@ -350,7 +350,7 @@
                             Installer l'application
                         </h3>
                         <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                            Ajoutez Genius Africa à votre écran d'accueil
+                            Ajoutez Global Vision à votre écran d'accueil
                         </p>
                     </div>
                     <ol style="color: var(--text-secondary); line-height: 2; margin-bottom: var(--spacing-xl); padding-left: var(--spacing-lg); font-size: 0.95rem;">
@@ -425,8 +425,8 @@
         if (navigator.share) {
             console.log('[PWA] Ouverture du menu partage...');
             navigator.share({
-                title: 'Installer Genius Africa',
-                text: 'Ajoutez Genius Africa à votre écran d\'accueil',
+                title: 'Installer Global Vision',
+                text: 'Ajoutez Global Vision à votre écran d\'accueil',
                 url: window.location.href
             }).then(() => {
                 console.log('[PWA] Menu partage ouvert avec succès');

@@ -44,13 +44,13 @@ def favicon_view(request):
     
     # D'abord chercher favicon.ico dans static
     if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-        favicon_path = os.path.join(settings.STATIC_ROOT, 'image', 'Genius_Africa.png')
+        favicon_path = os.path.join(settings.STATIC_ROOT, 'image', 'global_vision.png')
         if not os.path.exists(favicon_path):
             favicon_path = None
     
     if not favicon_path and hasattr(settings, 'STATICFILES_DIRS') and settings.STATICFILES_DIRS:
         for static_dir in settings.STATICFILES_DIRS:
-            potential_path = os.path.join(static_dir, 'image', 'Genius_Africa.png')
+            potential_path = os.path.join(static_dir, 'image', 'global_vision.png')
             if os.path.exists(potential_path):
                 favicon_path = potential_path
                 break

@@ -5,7 +5,7 @@
 
 
 <div class="container">
-    <h1>👥 Mes Filleuls</h1>
+    <h1>👥 Mes Partenaires</h1>
 
     {% if filleuls_bonus %}
     <table>
@@ -28,13 +28,13 @@
     </table>
     {% else %}
     <div class="empty-message">
-        🚫 Vous n'avez pas encore de filleuls.
+        🚫 Vous n'avez pas encore de partenaires.
     </div>
     {% endif %}
 
     <div style="text-align: center; margin-top: 20px;">
         <a href="{% url 'mon_code_parrainage' %}" class="btn">
-            🎟️ Voir mon code de parrainage
+            🎟️ Voir mon code de partenariat
         </a>
     </div>
 </div>

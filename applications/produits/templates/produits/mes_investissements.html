@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}  <!-- Chargez le filtre personnalisé -->
 
-{% block titre %}Mes Investissements - Genius Africa{% endblock %}
+{% block titre %}Mes Investissements - Global Vision{% endblock %}
 
 {% block contenu %}
 <div class="investissements-container">
@@ -9,11 +9,11 @@
 
     <div class="resume-investissements">
         <div class="resume-card">
-            <h3>Total Investi</h3>
+            <h3>Capital Investi</h3>
             <p>{{ total_investi }} FC</p>
         </div>
         <div class="resume-card">
-            <h3>Bénéfices Totaux</h3>
+            <h3>Revenus Totaux</h3>
             <p>{{ total_benefices }} FC</p>
         </div>
         <div class="resume-card">
@@ -37,25 +37,25 @@
             </div>
             <div class="investissement-details">
                 <div class="detail-row">
-                    <span>Date signature:</span>
+                    <span>Date d'investissement:</span>
                     <span>{{ inv.achat.date_debut|date:"d/m/Y" }}</span>
                 </div>
                 <div class="detail-row">
-                    <span>Montant investi:</span>
+                    <span>Capital investi:</span>
                     <span>{{ inv.achat.prix_au_moment_achat }} FC</span>
                 </div>
                 <div class="detail-row">
-                    <span>Bénéfices générés:</span>
+                    <span>Revenus générés:</span>
                     <span>{{ inv.total_gains }} FC</span>
                 </div>
                 <div class="detail-row">
-                    <span>Bénéfice net:</span>
+                    <span>Rendement net:</span>
                     <span class="{% if inv.benefice_net >= 0 %}positif{% else %}negatif{% endif %}">
                         {{ inv.benefice_net }} FC
                     </span>
                 </div>
                 <div class="detail-row">
-                    <span>Date de fin:</span>
+                    <span>Fin de contrat:</span>
                     <span>{{ inv.achat.date_fin|date:"d/m/Y" }}</span>
                 </div>
                 {% if inv.achat.statut == 'actif' %}
@@ -65,7 +65,7 @@
                 </div>
                 {% endif %}
                 <div class="detail-row">
-                    <span>Taux quotidien:</span>
+                    <span>Taux de rendement:</span>
                     <span>{{ inv.achat.produit.taux_quotidien }}%</span>
                 </div>
             </div>
@@ -74,9 +74,9 @@
     </div>
     {% else %}
     <div class="no-investissements">
-        <i class="fas fa-box-open"></i>
+        <i class="fas fa-industry"></i>
         <p>Vous n'avez pas encore effectué d'investissements.</p>
-        <a href="{% url 'liste_produits' %}" class="bouton">Voir les produits disponibles</a>
+        <a href="{% url 'liste_produits' %}" class="bouton">Voir les opportunités disponibles</a>
     </div>
     {% endif %}
 </div>

@@ -1,5 +1,5 @@
 /**
- * Gestionnaire de thèmes pour Genius Africa
+ * Gestionnaire de thèmes pour Global Vision
  * Supporte: dark, light, system
  */
 

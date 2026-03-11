@@ -4,15 +4,15 @@
 {% block contenu %}
 <div class="page-modern">
     <div class="page-header-compact">
-        <h1>Mon Code de Parrainage</h1>
-        <p class="text-muted">Partagez et gagnez des bonus</p>
+        <h1>Mon Code de Partenariat</h1>
+        <p class="text-muted">Partagez et développez votre réseau d'investisseurs</p>
     </div>
 
     <div class="page-grid">
-        <!-- Code de parrainage - 2 colonnes -->
+        <!-- Code de partenariat - 2 colonnes -->
         <div class="card-modern code-card" style="grid-column: span 2;">
             <div class="card-header-compact">
-                <span class="card-label">Votre code unique</span>
+                <span class="card-label">Votre code de partenariat unique</span>
             </div>
             <div class="code-display">
                 <div class="code-value">{{ code_parrainage }}</div>
@@ -23,10 +23,10 @@
             </div>
         </div>
 
-        <!-- Lien de parrainage - 2 colonnes -->
+        <!-- Lien de partenariat - 2 colonnes -->
         <div class="card-modern link-card" style="grid-column: span 2;">
             <div class="card-header-compact">
-                <span class="card-label">Lien de parrainage</span>
+                <span class="card-label">Lien de partenariat</span>
             </div>
             <div class="link-display">
                 <input type="text" value="{{ lien_parrainage }}" id="lienParrainage" readonly class="link-input">
@@ -61,25 +61,25 @@
             </div>
         </div>
 
-        <!-- Avantages VIP - 4 colonnes -->
+        <!-- Avantages de partenariat - 4 colonnes -->
         <div class="card-modern vip-card" style="grid-column: span 4;">
             <div class="card-header-compact">
-                <span class="card-label">Avantages du parrainage</span>
+                <span class="card-label">Avantages du partenariat</span>
             </div>
             <div class="vip-grid">
                 <div class="vip-item-compact">
                     <div class="vip-badge-compact" style="background: linear-gradient(135deg, #667eea, #764ba2);">VIP 1</div>
                     <div class="vip-percentage-compact">10%</div>
                     <ul class="vip-list-compact">
-                        <li><i class="fas fa-check"></i> Prime trading</li>
-                        <li><i class="fas fa-check"></i> Starter prime</li>
+                        <li><i class="fas fa-check"></i> Prime investissement</li>
+                        <li><i class="fas fa-check"></i> Starter capital</li>
                     </ul>
                 </div>
                 <div class="vip-item-compact">
                     <div class="vip-badge-compact" style="background: linear-gradient(135deg, #f093fb, #f5576c);">VIP 2</div>
                     <div class="vip-percentage-compact">12%</div>
                     <ul class="vip-list-compact">
-                        <li><i class="fas fa-check"></i> Altime trading</li>
+                        <li><i class="fas fa-check"></i> Altime investissement</li>
                         <li><i class="fas fa-check"></i> Mango capital</li>
                     </ul>
                 </div>
@@ -88,14 +88,14 @@
                     <div class="vip-percentage-compact">13%</div>
                     <ul class="vip-list-compact">
                         <li><i class="fas fa-check"></i> Tranford global</li>
-                        <li><i class="fas fa-check"></i> World Trading</li>
+                        <li><i class="fas fa-check"></i> World Investissement</li>
                     </ul>
                 </div>
                 <div class="vip-item-compact">
                     <div class="vip-badge-compact" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">VIP 4</div>
                     <div class="vip-percentage-compact">15%</div>
                     <ul class="vip-list-compact">
-                        <li><i class="fas fa-check"></i> Scofield trading</li>
+                        <li><i class="fas fa-check"></i> Scofield investissement</li>
                         <li><i class="fas fa-check"></i> Ferguson capital</li>
                     </ul>
                 </div>
@@ -346,13 +346,13 @@ function shareOnTwitter() {
 }
 
 function shareOnWhatsApp() {
-    const text = encodeURIComponent('Rejoignez-moi sur Genius Africa avec ce lien: {{ lien_parrainage }}');
+    const text = encodeURIComponent('Rejoignez-moi sur Global Vision avec ce lien: {{ lien_parrainage }}');
     window.open(`https://wa.me/?text=${text}`, '_blank');
 }
 
 function shareByEmail() {
-    const subject = encodeURIComponent('Rejoignez Genius Africa');
-    const body = encodeURIComponent('Rejoignez-moi sur Genius Africa avec ce lien: {{ lien_parrainage }}');
+    const subject = encodeURIComponent('Rejoignez Global Vision');
+    const body = encodeURIComponent('Rejoignez-moi sur Global Vision avec ce lien: {{ lien_parrainage }}');
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 </script>

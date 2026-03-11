@@ -4,9 +4,6 @@ from decimal import Decimal
 from datetime import timedelta
 
 from django.db import models
-from django.conf import settings
-from decimal import Decimal
-from datetime import timedelta
 from django.utils import timezone
 
 class Produit(models.Model):
@@ -16,6 +13,10 @@ class Produit(models.Model):
         ('AUCUN', '------------'),
         ('TRNSPRT', 'TRANSPORT'),
         ('AGRCL', 'AGRICOL'),
+        ('ENERGIE', 'ÉNERGIE'),
+        ('IMMOBILIER', 'IMMOBILIER LOCATIF'),
+        ('COMMERCE', 'COMMERCE'),
+        ('INDUSTRIE', 'INDUSTRIE'),
         
     ]
     categorie = models.CharField(max_length=12, choices=CATEG_CHOIX, default='AUCUN', verbose_name="CATEG")
@@ -55,7 +56,7 @@ class Achat(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Achat de {self.produit.nom} par {self.utilisateur.email} ({self.get_statut_display()})"
+        return f"{self.utilisateur.email} - {self.produit.nom}"
 
 class GainQuotidien(models.Model):
     """Modèle pour les gains quotidiens générés par les achats."""
@@ -63,13 +64,10 @@ class GainQuotidien(models.Model):
     jour = models.DateField(verbose_name="Jour")
     montant = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Montant")
     poste = models.BooleanField(default=False, verbose_name="Posté au portefeuille")
-    poste_le = models.DateTimeField(null=True, blank=True, verbose_name="Date de postage")
+    poste_le = models.DateTimeField(null=True, blank=True, verbose_name="Date de posting")
 
     def __str__(self):
-        return f"Gain de {self.montant} FC pour {self.achat} le {self.jour}"
-
+        return f"Gain du {self.jour} - {self.montant} FC pour {self.achat} le {self.jour}"
 """class Control_achat(models.Model):
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='achat_control', verbose_name="Utilisateur")
     jours_payes = models.PositiveIntegerField(default=0, verbose_name="comptage")"""
-
-

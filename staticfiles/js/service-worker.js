@@ -1,5 +1,5 @@
 /**
- * Service Worker pour Genius Africa PWA
+ * Service Worker pour Global Vision PWA
  * Gère le cache et l'affichage hors ligne
  */
 
@@ -15,7 +15,7 @@ const urlsToCache = [
   '/static/css/connexion.css',
   '/static/css/accueil.css',
   '/static/js/theme.js',
-  '/static/image/Genius_Africa.png',
+  '/static/image/global_vision.png',
   '/offline/'
 ];
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titre %}Plateforme Genius Africa{% endblock %}</title>
+    <title>{% block titre %}Plateforme Global Vision{% endblock %}</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{% url 'favicon' %}" type="image/png">
@@ -14,8 +14,8 @@
     <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Genius Africa">
-    <link rel="apple-touch-icon" href="{% static 'image/Genius_Africa.png' %}">
+    <meta name="apple-mobile-web-app-title" content="Global Vision">
+    <link rel="apple-touch-icon" href="{% static 'image/global_vision.png' %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -389,8 +389,8 @@
         <nav>
             <div class="logo">
                 <a href="{% if user.is_authenticated %}{% url 'tableau_de_bord' %}{% else %}{% url 'accueil' %}{% endif %}" style="display: flex; align-items: center; gap: var(--spacing-xs); text-decoration: none;">
-                   <img class="img" src="{% static 'image/Genius_Africa.png' %}" alt="Genius Africa Logo" style="border-radius: var(--border-radius-sm); object-fit: cover; width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
-                    <span class="logo-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">Genius Africa</span>
+                   <img class="img" src="{% static 'image/global_vision.png' %}" alt="Global Vision Logo" style="border-radius: var(--border-radius-sm); object-fit: cover; width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
+                    <span class="logo-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">Global Vision</span>
                 </a>
             </div>
 
@@ -585,16 +585,16 @@
                         <span class="text">Dépôt</span>
                     </a>
                     <a href="{% url 'liste_produits' %}" class="nav-link">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="text">Trader</span>
+                        <i class="fas fa-industry"></i>
+                        <span class="text">Investissements</span>
                     </a>
                     <a href="{% url 'liste_retraits' %}" class="nav-link nav-link-important">
                         <i class="fas fa-money-bill-wave"></i>
                         <span class="text">Retrait</span>
                     </a>
                     <a href="{% url 'mon_code_parrainage' %}" class="nav-link">
-                        <i class="fas fa-gift"></i>
-                        <span class="text">Parrainage</span>
+                        <i class="fas fa-handshake"></i>
+                        <span class="text">Partenariat</span>
                     </a>
                     <a href="{% url 'deconnexion' %}" class="nav-link">
                         <i class="fas fa-sign-out-alt"></i>
@@ -633,17 +633,17 @@
                 <i class="fas fa-plus-circle"></i>
                 <span>Dépôt</span>
             </a>
-            <a href="{% url 'liste_produits' %}" class="mobile-nav-item" data-page="trader">
-                <i class="fas fa-chart-line"></i>
-                <span>Trader</span>
+            <a href="{% url 'liste_produits' %}" class="mobile-nav-item" data-page="investissements">
+                <i class="fas fa-industry"></i>
+                <span>Investissements</span>
             </a>
             <a href="{% url 'liste_retraits' %}" class="mobile-nav-item" data-page="retrait">
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Retrait</span>
             </a>
-            <a href="{% url 'mon_code_parrainage' %}" class="mobile-nav-item" data-page="parrainage">
-                <i class="fas fa-gift"></i>
-                <span>Parrainage</span>
+            <a href="{% url 'mon_code_parrainage' %}" class="mobile-nav-item" data-page="partenariat">
+                <i class="fas fa-handshake"></i>
+                <span>Partenariat</span>
             </a>
             <a href="{% url 'deconnexion' %}" class="mobile-nav-item" data-page="logout" style="color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i>

@@ -4,89 +4,118 @@
 {% block contenu %}
 <div class="page-modern">
     <div class="page-header-compact">
-        <h1>Nos Produits d'Investissement</h1>
-        <p class="text-muted">Choisissez le trader qui correspond à vos objectifs</p>
+        <h1>Opportunités d'Investissement</h1>
+        <p class="text-muted">Sélectionnez le secteur économique qui correspond à vos objectifs</p>
     </div>
 
     {% if produits %}
-    <div class="products-grid-compact">
-        {% for produit in produits %}
-        <div class="product-card-compact">
-            {% if produit.benefice and produit.benefice > produit.prix %}
-            <div class="product-badge-compact">Recommandé</div>
-            {% endif %}
-            
-            <div class="product-header-compact">
-                {% if produit.image %}
-                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-image-compact">
-                {% else %}
-                <div class="product-image-placeholder-compact">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                {% endif %}
+    <!-- Regrouper par catégorie -->
+    {% regroup produits by categorie as categories %}
+    
+    {% for categorie in categories %}
+    <div class="sector-section">
+        <div class="sector-header sector-{{ categorie.grouper|lower }}">
+            <div class="sector-icon">
+                {% if categorie.grouper == 'TRNSPRT' %}<i class="fas fa-truck"></i>
+                {% elif categorie.grouper == 'AGRCL' %}<i class="fas fa-seedling"></i>
+                {% elif categorie.grouper == 'ENERGIE' %}<i class="fas fa-bolt"></i>
+                {% elif categorie.grouper == 'IMMOBILIER' %}<i class="fas fa-home"></i>
+                {% elif categorie.grouper == 'COMMERCE' %}<i class="fas fa-store"></i>
+                {% elif categorie.grouper == 'INDUSTRIE' %}<i class="fas fa-industry"></i>
+                {% else %}<i class="fas fa-folder"></i>{% endif %}
             </div>
-            
-            <div class="product-body-compact">
-                <h3 class="product-title-compact">{{ produit.nom }}</h3>
-                <p class="product-description-compact">{{ produit.description|truncatewords:15 }}</p>
-                
-                <div class="product-stats-compact">
-                    <div class="stat-compact">
-                        <div class="stat-icon-compact" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="stat-info-compact">
-                            <div class="stat-value-compact">{{ produit.prix }} FC</div>
-                            <div class="stat-label-compact">Investissement</div>
-                        </div>
-                    </div>
-                    <div class="stat-compact">
-                        <div class="stat-icon-compact" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="stat-info-compact">
-                            <div class="stat-value-compact">{{ produit.taux_quotidien }}%</div>
-                            <div class="stat-label-compact">Gain/jour</div>
-                        </div>
-                    </div>
-                    <div class="stat-compact">
-                        <div class="stat-icon-compact" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                        <div class="stat-info-compact">
-                            <div class="stat-value-compact">{{ produit.duree_jours }}</div>
-                            <div class="stat-label-compact">Jours</div>
-                        </div>
-                    </div>
-                </div>
-                
-                {% if produit.benefice %}
-                <div class="product-benefit-compact">
-                    <i class="fas fa-gift"></i>
-                    <span>Bénéfice: <strong>{{ produit.benefice }} FC</strong></span>
-                </div>
-                {% endif %}
-                
-                {% if capital_actifs == 0 %}
-                <a href="{% url 'achat' produit.id %}" class="btn-compact btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">
-                    <i class="fas fa-handshake"></i>
-                    <span>Signer le contrat</span>
-                </a>
-                {% else %}
-                <button class="btn-compact btn-secondary" style="width: 100%; margin-top: var(--spacing-sm);" disabled>
-                    <i class="fas fa-lock"></i>
-                    <span>Contrat actif</span>
-                </button>
-                {% endif %}
+            <div class="sector-info">
+                <h2 class="sector-title">{{ categorie.grouper|default:"Autres secteurs" }}</h2>
+                <p class="sector-count">{{ categorie.list|length }} opportunité{{ categorie.list|length|pluralize }}</p>
             </div>
         </div>
-        {% endfor %}
+
+        <div class="products-grid-compact">
+            {% for produit in categorie.list %}
+            <div class="product-card-compact">
+                {% if produit.benefice and produit.benefice > produit.prix %}
+                <div class="product-badge-compact">Recommandé</div>
+                {% endif %}
+                
+                <div class="product-header-compact">
+                    {% if produit.image %}
+                    <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-image-compact">
+                    {% else %}
+                    <div class="product-image-placeholder-compact">
+                        {% if categorie.grouper == 'TRNSPRT' %}<i class="fas fa-truck"></i>
+                        {% elif categorie.grouper == 'AGRCL' %}<i class="fas fa-seedling"></i>
+                        {% elif categorie.grouper == 'ENERGIE' %}<i class="fas fa-bolt"></i>
+                        {% elif categorie.grouper == 'IMMOBILIER' %}<i class="fas fa-home"></i>
+                        {% elif categorie.grouper == 'COMMERCE' %}<i class="fas fa-store"></i>
+                        {% elif categorie.grouper == 'INDUSTRIE' %}<i class="fas fa-industry"></i>
+                        {% else %}<i class="fas fa-industry"></i>{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="product-body-compact">
+                    <h3 class="product-title-compact">{{ produit.nom }}</h3>
+                    <p class="product-description-compact">{{ produit.description|truncatewords:15 }}</p>
+                    
+                    <div class="product-stats-compact">
+                        <div class="stat-compact">
+                            <div class="stat-icon-compact" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="stat-info-compact">
+                                <div class="stat-value-compact">{{ produit.prix }} FC</div>
+                                <div class="stat-label-compact">Investissement</div>
+                            </div>
+                        </div>
+                        <div class="stat-compact">
+                            <div class="stat-icon-compact" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-info-compact">
+                                <div class="stat-value-compact">{{ produit.taux_quotidien }}%</div>
+                                <div class="stat-label-compact">Rendement/mois</div>
+                            </div>
+                        </div>
+                        <div class="stat-compact">
+                            <div class="stat-icon-compact" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-info-compact">
+                                <div class="stat-value-compact">{{ produit.duree_jours }}</div>
+                                <div class="stat-label-compact">Jours</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if produit.benefice %}
+                    <div class="product-benefit-compact">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Rendement estimé: <strong>{{ produit.benefice }} FC</strong></span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if capital_actifs == 0 %}
+                    <a href="{% url 'achat' produit.id %}" class="btn-compact btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">
+                        <i class="fas fa-handshake"></i>
+                        <span>Signer le contrat</span>
+                    </a>
+                    {% else %}
+                    <button class="btn-compact btn-secondary" style="width: 100%; margin-top: var(--spacing-sm);" disabled>
+                        <i class="fas fa-lock"></i>
+                        <span>Investissement actif</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    {% endfor %}
     {% else %}
     <div class="empty-state-compact">
-        <i class="fas fa-box-open"></i>
-        <h3>Aucun produit disponible</h3>
-        <p>Les produits seront bientôt disponibles.</p>
+        <i class="fas fa-industry"></i>
+        <h3>Aucune opportunité disponible</h3>
+        <p>De nouvelles opportunités d'investissement seront bientôt disponibles.</p>
     </div>
     {% endif %}
 </div>
@@ -99,7 +128,7 @@
 }
 
 .page-header-compact {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
 }
 
 .page-header-compact h1 {
@@ -112,6 +141,89 @@
 .page-header-compact .text-muted {
     color: var(--text-muted);
     font-size: 0.875rem;
+}
+
+/* Sections par secteur */
+.sector-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.sector-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition);
+}
+
+.sector-header:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Couleurs par secteur */
+.sector-trnsprt .sector-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.sector-agrcl .sector-icon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+.sector-energie .sector-icon {
+    background: rgba(251, 146, 60, 0.1);
+    color: #fb923c;
+}
+
+.sector-immobilier .sector-icon {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
+.sector-commerce .sector-icon {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.sector-industrie .sector-icon {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+}
+
+.sector-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.sector-info {
+    flex: 1;
+}
+
+.sector-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sector-count {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
 }
 
 .products-grid-compact {
@@ -302,11 +414,27 @@
     .product-stats-compact {
         grid-template-columns: 1fr;
     }
+    
+    .sector-header {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .sector-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
     .products-grid-compact {
         grid-template-columns: 1fr;
+    }
+    
+    .sector-title {
+        font-size: 1.1rem;
     }
 }
 </style>

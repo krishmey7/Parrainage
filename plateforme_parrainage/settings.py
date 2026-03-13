@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-b*!2isvhm#d!^-0x8=d-#g(!0yprh%uutl-6l*5gjz91q_s31q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Mettre à False en production
 
-ALLOWED_HOSTS = ["www.geniusafrica.site", "geniusafrica.site", "127.0.0.1", "localhost", "172.20.10.3"]
+ALLOWED_HOSTS = ["krishmey.pythonanywhere.com", "geniusafrica.site", "127.0.0.1", "localhost", "172.20.10.3"]
 
 
 # Application definition
